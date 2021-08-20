@@ -3,8 +3,6 @@ package ru.volod878.buying_auto_parts.entity;
 import ru.volod878.buying_auto_parts.model.AutoPartResult;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "auto_parts")
@@ -20,42 +18,27 @@ public class AutoPart {
     @Column(name = "price")
     private double price;
 
-    @Column(name = "in_stock")
-    private int inStock;
+    @Column(name = "amount")
+    private int amount;
 
     @Column(name = "delivery_period")
     private int deliveryPeriod;
 
-    @ManyToMany(
-            cascade = { CascadeType.ALL }
-    )
-    @JoinTable(
-            name = "customer_auto_part",
-            joinColumns = @JoinColumn(name = "auto_part_id"),
-            inverseJoinColumns = @JoinColumn(name = "customer_id")
-    )
-    List<Customer> customers;
-
     public AutoPart() {
     }
 
-    public AutoPart(String name, int price, int inStock, int deliveryPeriod) {
+    public AutoPart(String name, int price, int amount, int deliveryPeriod) {
         this.name = name;
         this.price = price;
-        this.inStock = inStock;
+        this.amount = amount;
         this.deliveryPeriod = deliveryPeriod;
-    }
-
-    public void addCustomer(Customer customer) {
-        if (customer == null) customers = new ArrayList<>();
-        customers.add(customer);
     }
 
     public AutoPart(AutoPartResult autoPartResult) {
         this.id = autoPartResult.getVendorCode();
         this.name = autoPartResult.getName();
         this.price = autoPartResult.getPrice();
-        this.inStock = autoPartResult.getInStock();
+        this.amount = autoPartResult.getInStock();
         this.deliveryPeriod = autoPartResult.getDeliveryPeriod();
     }
 
@@ -83,12 +66,12 @@ public class AutoPart {
         this.price = price;
     }
 
-    public int getInStock() {
-        return inStock;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setInStock(int inStock) {
-        this.inStock = inStock;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     public int getDeliveryPeriod() {
@@ -105,7 +88,7 @@ public class AutoPart {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", inStock=" + inStock +
+                ", amount=" + amount +
                 ", deliveryPeriod=" + deliveryPeriod +
                 '}';
     }

@@ -15,20 +15,10 @@ public class Customer {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.REFRESH,
-                    CascadeType.MERGE,
-                    CascadeType.DETACH
-            }
-    )
-    @JoinTable(
-            name = "customer_auto_part",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "auto_part_id")
-    )
-    List<AutoPart> autoParts;
+    @OneToMany(cascade = CascadeType.ALL,
+    mappedBy = "customer",
+    fetch = FetchType.EAGER)
+    private List<Order> orders;
 
     public Customer() {
     }
@@ -37,9 +27,9 @@ public class Customer {
         this.name = name;
     }
 
-    public void addAutoPart(AutoPart autoPart) {
-        if (autoPart == null) autoParts = new ArrayList<>();
-        autoParts.add(autoPart);
+    public void addOrder(Order order) {
+        if (order == null) orders = new ArrayList<>();
+        orders.add(order);
     }
 
     public int getId() {
@@ -58,11 +48,19 @@ public class Customer {
         this.name = name;
     }
 
-    public List<AutoPart> getAutoParts() {
-        return autoParts;
+    public List<Order> getOrders() {
+        return orders;
     }
 
-    public void setAutoParts(List<AutoPart> autoParts) {
-        this.autoParts = autoParts;
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

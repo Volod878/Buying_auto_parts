@@ -1,24 +1,39 @@
-CREATE DATABASE  buying_auto;
+DROP DATABASE buying_auto;
+
+CREATE DATABASE buying_auto;
 USE buying_auto;
 
 CREATE TABLE buying_auto.auto_parts (
-                                id int NOT NULL AUTO_INCREMENT,
-                                name varchar(50),
-                                price double ,
-                                in_stock int,
-                                delivery_period int,
-                                PRIMARY KEY (id)
+                                        id int NOT NULL AUTO_INCREMENT,
+                                        name varchar(50) NOT NULL,
+                                        price double NOT NULL,
+                                        amount int NOT NULL,
+                                        delivery_period int NOT NULL,
+                                        PRIMARY KEY (id)
+);
+
+CREATE TABLE buying_auto.shop (
+                                  id int NOT NULL AUTO_INCREMENT,
+                                  PRIMARY KEY (id),
+                                  in_stock int NOT NULL,
+                                  auto_part_id int NOT NULL,
+                                  FOREIGN KEY (auto_part_id) REFERENCES buying_auto.auto_parts(id)
 );
 
 CREATE TABLE buying_auto.customers (
-                               id int NOT NULL AUTO_INCREMENT,
-                               name varchar(50),
-                               PRIMARY KEY (id)
+                                         id int NOT NULL AUTO_INCREMENT,
+                                         PRIMARY KEY (id),
+                                         name VARCHAR(50) NOT NULL,
+                                         order_id int
+  );
+
+CREATE TABLE buying_auto.orders (
+                                    id int NOT NULL AUTO_INCREMENT,
+                                    PRIMARY KEY (id),
+                                    amount int NOT NULL,
+                                    shop_id int NOT NULL,
+                                    customer_id int NOT NULL,
+                                    FOREIGN KEY (shop_id) REFERENCES buying_auto.shop(id),
+                                    FOREIGN KEY (customer_id) REFERENCES buying_auto.customers(id)
 );
 
-CREATE TABLE buying_auto.customer_auto_part (
-                                     customer_id int NOT NULL,
-                                     auto_part_id int NOT NULL,
-                                     PRIMARY KEY (customer_id, auto_part_id),
-                                     FOREIGN KEY (customer_id) REFERENCES buying_auto.customers(id),
-                                     FOREIGN KEY (auto_part_id) REFERENCES buying_auto.auto_parts(id));
