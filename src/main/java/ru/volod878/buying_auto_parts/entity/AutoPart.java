@@ -24,6 +24,11 @@ public class AutoPart {
     @Column(name = "delivery_period")
     private int deliveryPeriod;
 
+    @OneToOne(mappedBy = "autoPart",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    private Shop shop;
+
     public AutoPart() {
     }
 
@@ -38,7 +43,7 @@ public class AutoPart {
         this.id = autoPartResult.getVendorCode();
         this.name = autoPartResult.getName();
         this.price = autoPartResult.getPrice();
-        this.amount = autoPartResult.getInStock();
+        this.amount = autoPartResult.getAmount();
         this.deliveryPeriod = autoPartResult.getDeliveryPeriod();
     }
 
@@ -62,7 +67,7 @@ public class AutoPart {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -80,6 +85,14 @@ public class AutoPart {
 
     public void setDeliveryPeriod(int deliveryPeriod) {
         this.deliveryPeriod = deliveryPeriod;
+    }
+
+    public Shop getShop() {
+        return shop;
+    }
+
+    public void setShop(Shop shop) {
+        this.shop = shop;
     }
 
     @Override

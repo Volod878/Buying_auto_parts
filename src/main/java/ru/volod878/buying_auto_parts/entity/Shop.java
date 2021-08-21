@@ -1,5 +1,7 @@
 package ru.volod878.buying_auto_parts.entity;
 
+import ru.volod878.buying_auto_parts.model.ShopResult;
+
 import javax.persistence.*;
 
 @Entity
@@ -23,6 +25,16 @@ public class Shop {
     public Shop(int inStock) {
         this.inStock = inStock;
     }
+
+    public Shop(ShopResult shopResult) {
+        this.id = shopResult.getVendorCode();
+        this.inStock = shopResult.getInStock();
+        this.autoPart = new AutoPart();
+        this.autoPart.setName(shopResult.getName());
+        this.autoPart.setPrice(shopResult.getPrice());
+        this.autoPart.setDeliveryPeriod(shopResult.getDeliveryPeriod());
+    }
+
 
     public int getId() {
         return id;

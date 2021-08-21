@@ -1,29 +1,28 @@
 package ru.volod878.buying_auto_parts.view;
 
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javafx.stage.Stage;
 import ru.volod878.buying_auto_parts.MainApp;
-import ru.volod878.buying_auto_parts.model.AutoPartResult;
+import ru.volod878.buying_auto_parts.model.ShopResult;
 import ru.volod878.buying_auto_parts.model.ShoppingCart;
-import ru.volod878.buying_auto_parts.service.AutoPartService;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
+import ru.volod878.buying_auto_parts.service.ShopService;
 
 public class ShopController {
 
     @FXML
-    private TableView<AutoPartResult> autoPartTable;
+    private TableView<ShopResult> autoPartOfShopTable;
     @FXML
-    private TableColumn<AutoPartResult, String> nameColumn;
+    private TableColumn<ShopResult, String> nameColumn;
     @FXML
-    private TableColumn<AutoPartResult, Double> priceColumn;
+    private TableColumn<ShopResult, Double> priceColumn;
     @FXML
-    private TableColumn<AutoPartResult, Integer> inStockColumn;
+    private TableColumn<ShopResult, Integer> inStockColumn;
     @FXML
-    private TableColumn<AutoPartResult, Integer> deliveryPeriodColumn;
+    private TableColumn<ShopResult, Integer> deliveryPeriodColumn;
 
     @FXML
     private Label vendorCodeLabel;
@@ -41,22 +40,17 @@ public class ShopController {
     private Stage dialogStage;
     private boolean okClicked = false;
 
-    private static final BuyingAutoService<AutoPartResult>
-            BUYING_AUTO_SERVICE = new AutoPartService(MainApp.getFactory());
+    private static final BuyingAutoService<ShopResult>
+            BUYING_AUTO_SERVICE = new ShopService(MainApp.getFactory());
 
     public ShopController() {
     }
 
-    /**
-     * Инициализация класса-контроллера. Этот метод вызывается автоматически
-     * после того, как fxml-файл будет загружен.
-     */
     @FXML
     private void initialize() {
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
-        //todo запчасти которые в магазине
-        ObservableList<AutoPartResult> autoPartResults = BUYING_AUTO_SERVICE.getAllEntityResults();
-        autoPartTable.setItems(autoPartResults);
+        ObservableList<ShopResult> shopResults = BUYING_AUTO_SERVICE.getAllEntityResults();
+        autoPartOfShopTable.setItems(shopResults);
 
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         priceColumn.setCellValueFactory(cellData -> cellData.getValue().priceProperty().asObject());
@@ -65,26 +59,26 @@ public class ShopController {
                 -> cellData.getValue().deliveryPeriodProperty().asObject());
 
         // Очистка дополнительной информации
-        showAutoPartDetails(null);
+        showShopDetails(null);
 
         // Слушаем изменения выбора, и при изменении отображаем
         // дополнительную информацию об автозапчасти.
-        autoPartTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showAutoPartDetails(newValue));
+        autoPartOfShopTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> showShopDetails(newValue));
     }
 
     /**
      * Заполняет все текстовые поля, отображая подробности об автозапчасти.
      * Если указанная автозапчасть = null, то все текстовые поля очищаются
      */
-    private void showAutoPartDetails(AutoPartResult autoPartResult) {
-        if (autoPartResult != null) {
+    private void showShopDetails(ShopResult shopResult) {
+        if (shopResult != null) {
             // Заполняем метки информацией из объекта AutoPart.
-            nameLabel.setText(autoPartResult.getName());
-            priceLabel.setText(Double.toString(autoPartResult.getPrice()));
-            inStockLabel.setText(Integer.toString(autoPartResult.getInStock()));
-            deliveryPeriodLabel.setText(Integer.toString(autoPartResult.getDeliveryPeriod()));
-            vendorCodeLabel.setText(Integer.toString(autoPartResult.getVendorCode()));
+            nameLabel.setText(shopResult.getName());
+            priceLabel.setText(Double.toString(shopResult.getPrice()));
+            inStockLabel.setText(Integer.toString(shopResult.getInStock()));
+            deliveryPeriodLabel.setText(Integer.toString(shopResult.getDeliveryPeriod()));
+            vendorCodeLabel.setText(Integer.toString(shopResult.getVendorCode()));
         } else {
             // Если AutoPart = null, то убираем весь текст.
             nameLabel.setText("");
@@ -101,10 +95,10 @@ public class ShopController {
      */
     @FXML
     public void handleAddAutoPart() {
-        AutoPartResult selectedAutoPartResult = autoPartTable.getSelectionModel().getSelectedItem();
+        ShopResult selectedShopResult = autoPartOfShopTable.getSelectionModel().getSelectedItem();
         int number = spinner.getValue();
-        if (selectedAutoPartResult != null && number != 0) {
-            ShoppingCart.addAutoPart(selectedAutoPartResult, number);
+        if (selectedShopResult != null && number != 0) {
+            ShoppingCart.addAutoPartInShop(selectedShopResult, number);
             initialize();
         } else {
             // Ничего не выбрано.

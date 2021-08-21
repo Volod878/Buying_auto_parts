@@ -1,36 +1,27 @@
 package ru.volod878.buying_auto_parts.model;
 
 import javafx.beans.property.*;
-import ru.volod878.buying_auto_parts.entity.AutoPart;
+import ru.volod878.buying_auto_parts.entity.Shop;
 
 /**
- * Класс-модель для автозапчастей.
+ * Класс-модель для автозапчастей в магазине.
  */
 
-public class AutoPartResult {
+public class ShopResult {
 
     private final IntegerProperty vendorCode;
     private final StringProperty name;
     private final DoubleProperty price;
-    private final IntegerProperty amount;
+    private final IntegerProperty inStock;
     private final IntegerProperty deliveryPeriod;
 
-    public AutoPartResult() {
-        this.name = new SimpleStringProperty();
-        this.price = new SimpleDoubleProperty();
-        this.amount = new SimpleIntegerProperty();
-        this.vendorCode = new SimpleIntegerProperty();
-        this.deliveryPeriod = new SimpleIntegerProperty();
+    public ShopResult(Shop shop) {
+        this.name = new SimpleStringProperty(shop.getAutoPart().getName());
+        this.price = new SimpleDoubleProperty(shop.getAutoPart().getPrice());
+        this.inStock = new SimpleIntegerProperty(shop.getInStock());
+        this.vendorCode = new SimpleIntegerProperty(shop.getId());
+        this.deliveryPeriod = new SimpleIntegerProperty(shop.getAutoPart().getDeliveryPeriod());
     }
-
-    public AutoPartResult(AutoPart autoPart) {
-        this.name = new SimpleStringProperty(autoPart.getName());
-        this.price = new SimpleDoubleProperty(autoPart.getPrice());
-        this.amount = new SimpleIntegerProperty(autoPart.getAmount());
-        this.vendorCode = new SimpleIntegerProperty(autoPart.getId());
-        this.deliveryPeriod = new SimpleIntegerProperty(autoPart.getDeliveryPeriod());
-    }
-
 
     public int getVendorCode() {
         return vendorCode.get();
@@ -68,16 +59,16 @@ public class AutoPartResult {
         this.price.set(price);
     }
 
-    public int getAmount() {
-        return amount.get();
+    public int getInStock() {
+        return inStock.get();
     }
 
-    public IntegerProperty amountProperty() {
-        return amount;
+    public IntegerProperty inStockProperty() {
+        return inStock;
     }
 
-    public void setAmount(int amount) {
-        this.amount.set(amount);
+    public void setInStock(int inStock) {
+        this.inStock.set(inStock);
     }
 
     public int getDeliveryPeriod() {

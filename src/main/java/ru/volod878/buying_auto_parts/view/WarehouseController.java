@@ -53,7 +53,7 @@ public class WarehouseController {
 
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         priceColumn.setCellValueFactory(cellData -> cellData.getValue().priceProperty().asObject());
-        inStockColumn.setCellValueFactory(cellData -> cellData.getValue().inStockProperty().asObject());
+        inStockColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
         deliveryPeriodColumn.setCellValueFactory(cellData
                 -> cellData.getValue().deliveryPeriodProperty().asObject());
 
@@ -75,7 +75,7 @@ public class WarehouseController {
             // Заполняем метки информацией из объекта AutoPart.
             nameLabel.setText(autoPartResult.getName());
             priceLabel.setText(Double.toString(autoPartResult.getPrice()));
-            inStockLabel.setText(Integer.toString(autoPartResult.getInStock()));
+            inStockLabel.setText(Integer.toString(autoPartResult.getAmount()));
             deliveryPeriodLabel.setText(Integer.toString(autoPartResult.getDeliveryPeriod()));
             vendorCodeLabel.setText(Integer.toString(autoPartResult.getVendorCode()));
         } else {

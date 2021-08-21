@@ -14,8 +14,9 @@ import org.hibernate.cfg.Configuration;
 
 import ru.volod878.buying_auto_parts.entity.AutoPart;
 import ru.volod878.buying_auto_parts.entity.Customer;
+import ru.volod878.buying_auto_parts.entity.Order;
+import ru.volod878.buying_auto_parts.entity.Shop;
 import ru.volod878.buying_auto_parts.model.AutoPartResult;
-import ru.volod878.buying_auto_parts.model.ShoppingCart;
 import ru.volod878.buying_auto_parts.view.AutoPartEditDialogController;
 import ru.volod878.buying_auto_parts.view.RootLayoutController;
 import ru.volod878.buying_auto_parts.view.ShoppingCartController;
@@ -38,6 +39,8 @@ public class MainApp extends Application {
                     .configure("hibernate.cfg.xml")
                     .addAnnotatedClass(AutoPart.class)
                     .addAnnotatedClass(Customer.class)
+                    .addAnnotatedClass(Order.class)
+                    .addAnnotatedClass(Shop.class)
                     .buildSessionFactory();
 
             launch(args);
@@ -89,7 +92,7 @@ public class MainApp extends Application {
 
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/auto-parts-shop.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/auto-parts-of-shop.fxml"));
             AnchorPane autoPartsReview = loader.load();
 
             rootLayout.setCenter(autoPartsReview);
@@ -105,7 +108,7 @@ public class MainApp extends Application {
 
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/auto-parts-warehouse.fxml"));
+            loader.setLocation(MainApp.class.getResource("view/auto-parts-of-warehouse.fxml"));
             AnchorPane autoPartsReview = loader.load();
 
             rootLayout.setCenter(autoPartsReview);

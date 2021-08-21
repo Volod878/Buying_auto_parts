@@ -44,7 +44,7 @@ public class AutoPartEditDialogController {
 
         nameField.setText(autoPartResult.getName());
         priceField.setText(Double.toString(autoPartResult.getPrice()));
-        inStockField.setText(Integer.toString(autoPartResult.getInStock()));
+        inStockField.setText(Integer.toString(autoPartResult.getAmount()));
         deliveryPeriodField.setText(Integer.toString(autoPartResult.getDeliveryPeriod()));
     }
 
@@ -63,7 +63,7 @@ public class AutoPartEditDialogController {
         if (isInputValid()) {
             autoPartResult.setName(nameField.getText());
             autoPartResult.setPrice(Double.parseDouble(priceField.getText()));
-            autoPartResult.setInStock(Integer.parseInt(inStockField.getText()));
+            autoPartResult.setAmount(Integer.parseInt(inStockField.getText()));
             autoPartResult.setDeliveryPeriod(Integer.parseInt(deliveryPeriodField.getText()));
 
             okClicked = true;
@@ -92,14 +92,23 @@ public class AutoPartEditDialogController {
         }
         if (priceField.getText() == null || priceField.getText().length() == 0) {
             errorMessage += "Не корректно набрана цена автозапчасти!\n";
-        }
-        if (inStockField.getText() == null || inStockField.getText().length() == 0) {
-            errorMessage += "Не корректно набрано количество автозапчасти!\n";
         } else {
             try {
-                Integer.parseInt(deliveryPeriodField.getText());
+                double price = Double.parseDouble(priceField.getText());
+                if (price < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                errorMessage += "Не корректно набрано количество автозапчасти (должно быть целое число)!\n";
+                errorMessage += "Не корректно набрана цена автозапчасти (должно быть положительное число)!\n";
+            }
+        }
+        if (inStockField.getText() == null || inStockField.getText().length() == 0) {
+            errorMessage += "Не корректно набрано количество автозапчастей!\n";
+        } else {
+            try {
+                int inStock = Integer.parseInt(inStockField.getText());
+                if (inStock < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                errorMessage += "Не корректно набрано количество автозапчастей " +
+                        "(должно быть положительное целое число)!\n";
             }
         }
 
@@ -107,9 +116,11 @@ public class AutoPartEditDialogController {
             errorMessage += "Не корректно набран срок доставки!\n";
         } else {
             try {
-                Integer.parseInt(deliveryPeriodField.getText());
+                int deliveryPeriod = Integer.parseInt(deliveryPeriodField.getText());
+                if (deliveryPeriod < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                errorMessage += "Не корректно набран срок доставки (должен быть целое число)!\n";
+                errorMessage += "Не корректно набран срок доставки " +
+                        "(должен быть положительное целое число)!\n";
             }
         }
 

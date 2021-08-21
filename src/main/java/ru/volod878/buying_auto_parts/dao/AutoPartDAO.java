@@ -2,8 +2,8 @@ package ru.volod878.buying_auto_parts.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import ru.volod878.buying_auto_parts.entity.AutoPart;
+import ru.volod878.buying_auto_parts.entity.Shop;
 
 import java.util.List;
 
@@ -34,11 +34,28 @@ public class AutoPartDAO implements BuyingAutoDAO<AutoPart> {
 
     @Override
     public void saveEntity(AutoPart autoPart) {
+
+        Shop shop;
+
+        try(Session session = factory.getCurrentSession()) {
+
+            int id = autoPart.getId();
+
+            session.beginTransaction();
+            if (id != 0) {
+                shop = session.get(Shop.class, id);
+            } else {
+                shop = new Shop(0);
+            }
+            session.getTransaction().commit();
+
+            shop.setAutoPart(autoPart);
+            autoPart.setShop(shop);
+        }
+
         try(Session session = factory.getCurrentSession()) {
             session.beginTransaction();
-
             session.saveOrUpdate(autoPart);
-
             session.getTransaction().commit();
         }
     }
@@ -63,9 +80,8 @@ public class AutoPartDAO implements BuyingAutoDAO<AutoPart> {
         try(Session session = factory.getCurrentSession()) {
             session.beginTransaction();
 
-            Query<AutoPart> query = session.createQuery("delete from AutoPart where id=:autoPartId");
-            query.setParameter("autoPartId", id);
-            query.executeUpdate();
+            AutoPart autoPart = session.get(AutoPart.class, id);
+            session.delete(autoPart);
 
             session.getTransaction().commit();
         }
