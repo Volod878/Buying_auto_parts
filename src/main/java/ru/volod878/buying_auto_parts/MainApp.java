@@ -12,11 +12,9 @@ import javafx.stage.Stage;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import ru.volod878.buying_auto_parts.entity.AutoPart;
-import ru.volod878.buying_auto_parts.entity.Customer;
-import ru.volod878.buying_auto_parts.entity.Order;
-import ru.volod878.buying_auto_parts.entity.Shop;
+import ru.volod878.buying_auto_parts.entity.*;
 import ru.volod878.buying_auto_parts.model.AutoPartResult;
+import ru.volod878.buying_auto_parts.model.OrderResult;
 import ru.volod878.buying_auto_parts.view.AutoPartEditDialogController;
 import ru.volod878.buying_auto_parts.view.RootLayoutController;
 import ru.volod878.buying_auto_parts.view.ShoppingCartController;
@@ -41,6 +39,7 @@ public class MainApp extends Application {
                     .addAnnotatedClass(Customer.class)
                     .addAnnotatedClass(Order.class)
                     .addAnnotatedClass(Shop.class)
+                    .addAnnotatedClass(ShoppingCart.class)
                     .buildSessionFactory();
 
             launch(args);
@@ -117,6 +116,22 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Показывает в корневом макете сведения о клиентах
+     */
+    public void showCustomer() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/customer.fxml"));
+            AnchorPane autoPartsReview = loader.load();
+
+            rootLayout.setCenter(autoPartsReview);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static Stage getPrimaryStage() {
         return primaryStage;
@@ -165,11 +180,11 @@ public class MainApp extends Application {
     /**
      * Открывает диалоговое окно для оплаты автозапчастей.
      * Если пользователь кликнул Оплатить, то изменения сохраняются в предоставленном
-     * объекте автозапчасти и возвращается значение true.
+     * объекте заказа и возвращается значение true.
      *
      * @return true, если пользователь кликнул Оплатить, в противном случае false.
      */
-    public static boolean showShoppingCardDialog() {
+    public static boolean showShoppingCardDialog(OrderResult orderResult) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/shopping-cart.fxml"));
@@ -186,9 +201,12 @@ public class MainApp extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Передаём Stage в контроллер.
+            // Передаём OrderResult в контроллер.
             ShoppingCartController controller = loader.getController();
             controller.setDialogStage(dialogStage);
+            controller.setOrder(orderResult);
+            controller.setCustomerLabel();
+            controller.initTable();
 
             // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
             dialogStage.showAndWait();

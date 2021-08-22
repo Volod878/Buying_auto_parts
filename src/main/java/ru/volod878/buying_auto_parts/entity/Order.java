@@ -1,6 +1,11 @@
 package ru.volod878.buying_auto_parts.entity;
 
+import ru.volod878.buying_auto_parts.model.OrderResult;
+import ru.volod878.buying_auto_parts.model.ShoppingCartResult;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -10,22 +15,32 @@ public class Order {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "amount")
-    private int amount;
+    @Column(name = "total_cost")
+    private double totalCost;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
+    @OneToMany(cascade = {
+            CascadeType.ALL
+    },
+            mappedBy = "order",
+            fetch = FetchType.EAGER)
+    private List<ShoppingCart> shoppingCart;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {
+            CascadeType.ALL
+    },
+            fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
     public Order() {
     }
 
-    public Order(int amount) {
-        this.amount = amount;
+    public Order(OrderResult orderResult) {
+        this.totalCost = orderResult.getTotalCost();
+
+        this.shoppingCart = new ArrayList<>();
+        for (ShoppingCartResult shoppingCartResult: orderResult.getAllPurchases())
+            this.shoppingCart.add(new ShoppingCart(shoppingCartResult, this));
     }
 
     public int getId() {
@@ -36,20 +51,20 @@ public class Order {
         this.id = id;
     }
 
-    public int getAmount() {
-        return amount;
+    public double getTotalCost() {
+        return totalCost;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setTotalCost(double totalCost) {
+        this.totalCost = totalCost;
     }
 
-    public Shop getShop() {
-        return shop;
+    public List<ShoppingCart> getShoppingCart() {
+        return shoppingCart;
     }
 
-    public void setShop(Shop shop) {
-        this.shop = shop;
+    public void setShoppingCart(List<ShoppingCart> shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 
     public Customer getCustomer() {
@@ -58,13 +73,5 @@ public class Order {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", amount=" + amount +
-                '}';
     }
 }

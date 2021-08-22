@@ -94,15 +94,4 @@ public class AutoPart {
     public void setShop(Shop shop) {
         this.shop = shop;
     }
-
-    @Override
-    public String toString() {
-        return "AutoPart{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", amount=" + amount +
-                ", deliveryPeriod=" + deliveryPeriod +
-                '}';
-    }
 }

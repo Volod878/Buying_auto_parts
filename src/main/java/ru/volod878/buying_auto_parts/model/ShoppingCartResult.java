@@ -1,36 +1,18 @@
 package ru.volod878.buying_auto_parts.model;
 
 import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
-public class ShoppingCart {
-    private StringProperty name;
+public class ShoppingCartResult {
+    private final StringProperty name;
     private final DoubleProperty price;
     private final IntegerProperty amount;
     private final DoubleProperty cost;
 
-    private static final ObservableList<ShoppingCart> shoppingCart = FXCollections.observableArrayList();
-
-    public ShoppingCart(String name, Double price, Integer amount, Double cost) {
+    public ShoppingCartResult(String name, Double price, Integer amount, Double cost) {
         this.name = new SimpleStringProperty(name);
         this.price = new SimpleDoubleProperty(price);
         this.amount = new SimpleIntegerProperty(amount);
         this.cost = new SimpleDoubleProperty(cost);
-    }
-
-    public static void addAutoPart(AutoPartResult autoPartResult, Integer value) {
-        shoppingCart.add(new ShoppingCart(
-                autoPartResult.getName(),
-                autoPartResult.getPrice(),
-                value,
-                autoPartResult.getPrice() * value
-                )
-        );
-    }
-
-    public static ObservableList<ShoppingCart> getShoppingCart() {
-        return shoppingCart;
     }
 
     public String getName() {

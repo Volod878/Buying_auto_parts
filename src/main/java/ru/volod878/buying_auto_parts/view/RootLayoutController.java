@@ -14,9 +14,13 @@ public class RootLayoutController {
         this.mainApp = mainApp;
     }
 
-    //todo
+    /**
+     * Вызывается, когда пользователь нажимает кнопку "Список клиентов"
+     * Открывает таблица с информацией о клиентах
+     */
     @FXML
     public void handleCustomerList() {
+        mainApp.showCustomer();
     }
 
     /**

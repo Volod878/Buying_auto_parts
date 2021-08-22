@@ -29,10 +29,6 @@ public class Shop {
     public Shop(ShopResult shopResult) {
         this.id = shopResult.getVendorCode();
         this.inStock = shopResult.getInStock();
-        this.autoPart = new AutoPart();
-        this.autoPart.setName(shopResult.getName());
-        this.autoPart.setPrice(shopResult.getPrice());
-        this.autoPart.setDeliveryPeriod(shopResult.getDeliveryPeriod());
     }
 
 
@@ -58,13 +54,5 @@ public class Shop {
 
     public void setAutoPart(AutoPart autoPart) {
         this.autoPart = autoPart;
-    }
-
-    @Override
-    public String toString() {
-        return "Shop{" +
-                "id=" + id +
-                ", inStock=" + inStock +
-                '}';
     }
 }

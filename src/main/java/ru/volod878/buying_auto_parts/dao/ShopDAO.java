@@ -36,7 +36,8 @@ public class ShopDAO implements BuyingAutoDAO<Shop> {
         try(Session session = factory.getCurrentSession()) {
             session.beginTransaction();
 
-            session.saveOrUpdate(shop);
+            Shop tempShop = session.get(Shop.class, shop.getId());
+            tempShop.setInStock(shop.getInStock());
 
             session.getTransaction().commit();
         }

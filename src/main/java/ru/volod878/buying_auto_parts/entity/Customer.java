@@ -23,10 +23,6 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String name) {
-        this.name = name;
-    }
-
     public void addOrder(Order order) {
         if (order == null) orders = new ArrayList<>();
         orders.add(order);
@@ -54,13 +50,5 @@ public class Customer {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
-    }
-
-    @Override
-    public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
     }
 }

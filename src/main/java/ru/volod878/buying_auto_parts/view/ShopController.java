@@ -4,14 +4,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import javafx.stage.Stage;
 import ru.volod878.buying_auto_parts.MainApp;
-import ru.volod878.buying_auto_parts.model.ShopResult;
-import ru.volod878.buying_auto_parts.model.ShoppingCart;
+import ru.volod878.buying_auto_parts.model.*;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
+import ru.volod878.buying_auto_parts.service.CustomerService;
 import ru.volod878.buying_auto_parts.service.ShopService;
 
+
 public class ShopController {
+    @FXML
+    public Label customerLabel;
 
     @FXML
     private TableView<ShopResult> autoPartOfShopTable;
@@ -37,19 +39,27 @@ public class ShopController {
     @FXML
     private Spinner<Integer> spinner;
 
-    private Stage dialogStage;
-    private boolean okClicked = false;
-
+    private static final BuyingAutoService<CustomerResult>
+            CUSTOMER_SERVICE = new CustomerService(MainApp.getFactory());
     private static final BuyingAutoService<ShopResult>
-            BUYING_AUTO_SERVICE = new ShopService(MainApp.getFactory());
+            SHOP_SERVICE = new ShopService(MainApp.getFactory());
+
+    private CustomerResult storeUser;
+    private OrderResult orderResult = new OrderResult();
+    private ObservableList<ShopResult> shopResults;
 
     public ShopController() {
     }
 
     @FXML
     private void initialize() {
+        // Инициализация клиента с которым идет работа (по умолчанию - Администратор)
+        if (storeUser == null) storeUser = CUSTOMER_SERVICE.getEntityResult(1);
+        customerLabel.setText(storeUser.getName());
+
+
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
-        ObservableList<ShopResult> shopResults = BUYING_AUTO_SERVICE.getAllEntityResults();
+        shopResults = SHOP_SERVICE.getAllEntityResults();
         autoPartOfShopTable.setItems(shopResults);
 
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -79,13 +89,29 @@ public class ShopController {
             inStockLabel.setText(Integer.toString(shopResult.getInStock()));
             deliveryPeriodLabel.setText(Integer.toString(shopResult.getDeliveryPeriod()));
             vendorCodeLabel.setText(Integer.toString(shopResult.getVendorCode()));
+
+            // Устанавливаем максимальное количество товара
+            // равное их количеству в магазине
+            int maxValue = shopResult.getInStock();
+
+            // Вычитаем то что добавили в корзину
+            if (orderResult.getAllPurchases().size() > 0)
+                for (ShoppingCartResult shoppingCartResult: orderResult.getAllPurchases())
+                    if (shoppingCartResult.getName().equals(shopResult.getName()))
+                        maxValue -= shoppingCartResult.getAmount();
+
+            SpinnerValueFactory<Integer> valueFactory =
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue, 0);
+            spinner.setValueFactory(valueFactory);
         } else {
-            // Если AutoPart = null, то убираем весь текст.
             nameLabel.setText("");
             priceLabel.setText("");
             inStockLabel.setText("");
             deliveryPeriodLabel.setText("");
             vendorCodeLabel.setText("");
+            SpinnerValueFactory<Integer> valueFactory =
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0, 0);
+            spinner.setValueFactory(valueFactory);
         }
     }
 
@@ -98,7 +124,7 @@ public class ShopController {
         ShopResult selectedShopResult = autoPartOfShopTable.getSelectionModel().getSelectedItem();
         int number = spinner.getValue();
         if (selectedShopResult != null && number != 0) {
-            ShoppingCart.addAutoPartInShop(selectedShopResult, number);
+            orderResult.addAllPurchases(selectedShopResult, number);
             initialize();
         } else {
             // Ничего не выбрано.
@@ -117,25 +143,21 @@ public class ShopController {
      */
     @FXML
     public void handleShoppingCart() {
-        boolean okClicked = MainApp.showShoppingCardDialog();
+        orderResult.setCustomerResult(storeUser);
+        boolean okClicked = MainApp.showShoppingCardDialog(orderResult);
         if (okClicked) {
-            //todo оформить клиенту заказ
+            storeUser.addOrder(orderResult);
+            storeUser.setNumberOfOrders(storeUser.getAllOrders().size());
+            // Уменьшить количество запчастей в магазине
+            for (ShoppingCartResult shoppingCartResult: orderResult.getAllPurchases())
+                for (ShopResult shopResult: shopResults)
+                    if (shopResult.getName().equals(shoppingCartResult.getName()))
+                        shopResult.setInStock(shopResult.getInStock() - shoppingCartResult.getAmount());
+
+            shopResults.forEach(SHOP_SERVICE::saveEntityResult);
+            CUSTOMER_SERVICE.saveEntityResult(storeUser);
+            orderResult = new OrderResult();
             initialize();
         }
     }
-
-    /**
-     * Устанавливает сцену для этого окна.
-     */
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
-    }
-
-    /**
-     * @return true, если пользователь кликнул Ок, в другом случае false.
-     */
-    public boolean isOkClicked() {
-        return okClicked;
-    }
-
 }

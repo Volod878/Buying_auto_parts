@@ -2,62 +2,58 @@ package ru.volod878.buying_auto_parts.view;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import ru.volod878.buying_auto_parts.model.AutoPartResult;
-import ru.volod878.buying_auto_parts.model.ShoppingCart;
+import ru.volod878.buying_auto_parts.MainApp;
+import ru.volod878.buying_auto_parts.model.OrderResult;
+import ru.volod878.buying_auto_parts.model.ShoppingCartResult;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ShoppingCartController {
 
     @FXML
-    public TableView<ShoppingCart> shoppingCartTable;
+    public TableView<ShoppingCartResult> shoppingCartTable;
     @FXML
-    public TableColumn<ShoppingCart, String> nameColumn;
+    public TableColumn<ShoppingCartResult, String> nameColumn;
     @FXML
-    public TableColumn<ShoppingCart, Double> priceColumn;
+    public TableColumn<ShoppingCartResult, Double> priceColumn;
     @FXML
-    public TableColumn<ShoppingCart, Integer> amountColumn;
+    public TableColumn<ShoppingCartResult, Integer> amountColumn;
     @FXML
-    public TableColumn<ShoppingCart, Double> costColumn;
+    public TableColumn<ShoppingCartResult, Double> costColumn;
     @FXML
     public Label totalCostLabel;
     @FXML
     public Label customerLabel;
 
     private Stage dialogStage;
+    private OrderResult orderResult;
     private boolean okClicked = false;
 
     public ShoppingCartController() {
     }
 
+    public void initTable() {
 
-    /**
-     * Инициализация класса-контроллера. Этот метод вызывается автоматически
-     * после того, как fxml-файл будет загружен.
-     */
-    @FXML
-    private void initialize() {
-        // Инициализация таблицы автозапчастей с четырьмя столбцами.
-        ObservableList<ShoppingCart> shoppingCart = ShoppingCart.getShoppingCart();
-        shoppingCartTable.setItems(shoppingCart);
+        // Инициализация таблицы автозапчастей в корзине.
+        ObservableList<ShoppingCartResult> shoppingCartResult = orderResult.getAllPurchases();
+        shoppingCartTable.setItems(shoppingCartResult);
 
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         priceColumn.setCellValueFactory(cellData -> cellData.getValue().priceProperty().asObject());
         amountColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
         costColumn.setCellValueFactory(cellData -> cellData.getValue().costProperty().asObject());
 
-        List<Double> total = shoppingCart.stream()
-                .map(ShoppingCart::getCost)
-                .collect(Collectors.toList());
 
+        // Подсчет общей стоимость заказа
+        List<Double> total = shoppingCartResult.stream()
+                .map(ShoppingCartResult::getCost)
+                .collect(Collectors.toList());
         double costTotal = total.stream().mapToDouble(e -> e).sum();
         totalCostLabel.setText(String.format("%.2f", costTotal));
     }
@@ -70,23 +66,51 @@ public class ShoppingCartController {
     }
 
     /**
-     * @return true, если пользователь кликнул Ок, в другом случае false.
+     * Устанавливаем заказ, который нужно оплатить
+     */
+    public void setOrder(OrderResult orderResult) {
+        this.orderResult = orderResult;
+    }
+
+    /**
+     * Устанавливаем имя клиента
+     */
+    public void setCustomerLabel() {
+        customerLabel.setText(orderResult.getCustomerResult().getName());
+    }
+
+    /**
+     * @return true, если пользователь кликнул Оплатить, в другом случае false.
      */
     public boolean isOkClicked() {
         return okClicked;
     }
 
     /**
-     * Вызывается, когда пользователь кликнул по кнопке Ок.
+     * Вызывается, когда пользователь кликнул по кнопке Оплатить.
      */
     @FXML
     private void handlePay() {
-        okClicked = true;
-        dialogStage.close();
+        double totalCost = Double.parseDouble(totalCostLabel.getText().replace(",", "."));
+        if (totalCost != 0.0) {
+            orderResult.setTotalCost(totalCost);
+
+            okClicked = true;
+            dialogStage.close();
+
+    } else {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initOwner(MainApp.getPrimaryStage());
+        alert.setTitle("Внимание!");
+        alert.setHeaderText("Козина пустая.");
+        alert.setContentText("Пожалуйста, добавьте хотя бы один товар в корзину.");
+
+        alert.showAndWait();
+    }
     }
 
     /**
-     * Вызывается, когда пользователь кликнул по кнопке Отмена.
+     * Вызывается, когда пользователь кликнул по кнопке Назад.
      */
     @FXML
     private void handleBack() {

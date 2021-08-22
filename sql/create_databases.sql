@@ -23,17 +23,25 @@ CREATE TABLE buying_auto.shop (
 CREATE TABLE buying_auto.customers (
                                          id int NOT NULL AUTO_INCREMENT,
                                          PRIMARY KEY (id),
-                                         name VARCHAR(50) NOT NULL,
-                                         order_id int
+                                         name VARCHAR(50) NOT NULL
   );
 
 CREATE TABLE buying_auto.orders (
                                     id int NOT NULL AUTO_INCREMENT,
                                     PRIMARY KEY (id),
-                                    amount int NOT NULL,
-                                    shop_id int NOT NULL,
+                                    total_cost DOUBLE NOT NULL,
                                     customer_id int NOT NULL,
-                                    FOREIGN KEY (shop_id) REFERENCES buying_auto.shop(id),
                                     FOREIGN KEY (customer_id) REFERENCES buying_auto.customers(id)
+);
+
+CREATE TABLE buying_auto.shopping_cart (
+                                    id int NOT NULL AUTO_INCREMENT,
+                                    PRIMARY KEY (id),
+                                    name varchar(50) NOT NULL,
+                                    price double NOT NULL,
+                                    amount int NOT NULL,
+                                    cost double NOT NULL,
+                                    order_id int NOT NULL,
+                                    FOREIGN KEY (order_id) REFERENCES buying_auto.orders(id)
 );
 

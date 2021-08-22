@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="300.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.volod878.buying_auto_parts.view.CustomerController">
+    <SplitPane dividerPositions="0.1174496644295302" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+            <SplitPane dividerPositions="0.33668341708542715" prefHeight="160.0" prefWidth="200.0"
+                       AnchorPane.bottomAnchor="-0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                       AnchorPane.topAnchor="0.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <Label alignment="CENTER" text="Клиенты" textAlignment="CENTER" AnchorPane.bottomAnchor="0.0"
+                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <font>
+                            <Font size="20.0"/>
+                        </font>
+                    </Label>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                    <Label alignment="CENTER" text="Информация о заказах" textAlignment="CENTER"
+                           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                           AnchorPane.topAnchor="0.0">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Label>
+                </AnchorPane>
+            </SplitPane>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+            <SplitPane dividerPositions="0.33668341708542715" prefHeight="300.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="550.0">
+                    <TableView fx:id="customerTable" layoutX="-25.0" layoutY="40.0" prefHeight="200.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <columns>
+                            <TableColumn fx:id="nameColumn" minWidth="120.0" prefWidth="171.0" text="Имя клиента" />
+                            <TableColumn fx:id="ordersColumn" minWidth="0.0" prefWidth="81.0" text="Заказы" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="298.0" prefWidth="250.0">
+                    <TableView fx:id="ordersTable" prefHeight="200.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0"
+                               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <columns>
+                            <TableColumn fx:id="numberColumn" maxWidth="1500.0" minWidth="60.0" prefWidth="60.0"
+                                         text="№"/>
+                            <TableColumn fx:id="totalCostColumn" maxWidth="1500.0" minWidth="100.0" prefWidth="100.0"
+                                         text="Сумма, руб"/>
+                            <TableColumn fx:id="dateColumn" maxWidth="1500.0" minWidth="100.0" prefWidth="100.0"
+                                         text="Дата"/>
+                            <TableColumn fx:id="statusColumn" maxWidth="1500.0" minWidth="120.0" prefWidth="120.0"
+                                         text="Статус"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </AnchorPane>
+            </SplitPane>
+        </AnchorPane>
+    </SplitPane>
+</AnchorPane>
