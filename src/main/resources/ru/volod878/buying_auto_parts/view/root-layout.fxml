@@ -14,7 +14,6 @@
             <Menu mnemonicParsing="false" text="Товар">
                 <MenuItem mnemonicParsing="false" onAction="#handleAutoPartsWarehouse" text="Склад"/>
                 <MenuItem mnemonicParsing="false" onAction="#handleAutoPartsShop" text="Магазин"/>
-                <MenuItem mnemonicParsing="false" text="Найти"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Помощь">
                 <MenuItem mnemonicParsing="false" onAction="#handleHelp" text="Справка"/>

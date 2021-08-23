@@ -38,11 +38,15 @@ public class ShoppingCart {
     }
 
     public ShoppingCart(ShoppingCartResult shoppingCartResult, Order order) {
+        this(shoppingCartResult);
+        this.order = order;
+    }
+
+    public ShoppingCart(ShoppingCartResult shoppingCartResult) {
         this.name = shoppingCartResult.getName();
         this.price = shoppingCartResult.getPrice();
         this.amount = shoppingCartResult.getAmount();
         this.cost = shoppingCartResult.getCost();
-        this.order = order;
     }
 
     public int getId() {
@@ -83,5 +87,13 @@ public class ShoppingCart {
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

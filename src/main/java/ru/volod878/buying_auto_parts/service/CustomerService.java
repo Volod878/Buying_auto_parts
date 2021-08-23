@@ -7,15 +7,12 @@ import ru.volod878.buying_auto_parts.dao.BuyingAutoDAO;
 import ru.volod878.buying_auto_parts.dao.CustomerDAO;
 import ru.volod878.buying_auto_parts.entity.*;
 import ru.volod878.buying_auto_parts.model.CustomerResult;
-import ru.volod878.buying_auto_parts.model.OrderResult;
 
 import java.util.List;
 
 public class CustomerService implements BuyingAutoService<CustomerResult> {
 
     private final BuyingAutoDAO<Customer> buyingAutoDAO;
-
-    private Customer customer;
 
     public CustomerService(SessionFactory factory) {
         this.buyingAutoDAO = new CustomerDAO(factory);
@@ -31,20 +28,19 @@ public class CustomerService implements BuyingAutoService<CustomerResult> {
 
     @Override
     public void saveEntityResult(CustomerResult customerResult) {
-
-        int lastItem = customerResult.getAllOrders().size()-1;
-        OrderResult lastOrderResult = customerResult.getAllOrders().get(lastItem);
-
-        Order lastOrder = new Order(lastOrderResult);
-        lastOrder.setCustomer(customer);
-        customer.addOrder(lastOrder);
-
+        Customer customer = new Customer(customerResult);
+        int lastOrder = customerResult.getAllOrders().size() - 1;
+        if (lastOrder >= 0) {
+            Order order = new Order(customerResult.getAllOrders().get(lastOrder));
+            order.setCustomer(customer);
+            customer.addOrder(order);
+        }
         buyingAutoDAO.saveEntity(customer);
     }
 
     @Override
     public CustomerResult getEntityResult(int id) {
-        customer = buyingAutoDAO.getEntity(id);
+        Customer customer = buyingAutoDAO.getEntity(id);
         return new CustomerResult(customer);
     }
 

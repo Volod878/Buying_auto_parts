@@ -2,6 +2,7 @@ package ru.volod878.buying_auto_parts.view;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import ru.volod878.buying_auto_parts.MainApp;
@@ -29,16 +30,26 @@ public class CustomerController {
     @FXML
     public TableColumn<OrderResult, String> statusColumn;
 
-    private static final BuyingAutoService<CustomerResult>
-            BUYING_AUTO_SERVICE = new CustomerService(MainApp.getFactory());
+    public static final BuyingAutoService<CustomerResult>
+            CUSTOMER_SERVICE = new CustomerService(MainApp.getFactory());
+
+    private MainApp mainApp;
+
+    private CustomerResult customerResult;
+    private OrderResult orderResult;
 
     public CustomerController() {
     }
 
+    public void setMainApp(MainApp mainApp) {
+        this.mainApp = mainApp;
+    }
+
+
     @FXML
     private void initialize() {
         // Инициализация таблицы клиентов.
-        ObservableList<CustomerResult> allCustomerResults = BUYING_AUTO_SERVICE.getAllEntityResults();
+        ObservableList<CustomerResult> allCustomerResults = CUSTOMER_SERVICE.getAllEntityResults();
         customerTable.setItems(allCustomerResults);
 
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -47,7 +58,10 @@ public class CustomerController {
         // Слушаем изменения выбора, и при изменении отображаем
         // дополнительную информацию об автозапчасти.
         customerTable.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showOrderDetails(newValue));
+                (observable, oldValue, newValue) -> {
+                    this.customerResult = newValue;
+                    showOrderDetails(newValue);
+                });
     }
 
     /**
@@ -64,6 +78,51 @@ public class CustomerController {
             totalCostColumn.setCellValueFactory(cellData -> cellData.getValue().totalCostProperty().asObject());
             dateColumn.setCellValueFactory(cellData -> cellData.getValue().dataProperty());
             statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+
+            ordersTable.getSelectionModel().selectedItemProperty().addListener(
+                    (observable, oldValue, newValue) -> this.orderResult = newValue);
+
+        }
+    }
+
+    @FXML
+    public void handleDetails() {
+        if (orderResult != null) {
+            orderResult.setCustomerResult(customerResult);
+            MainApp.showPurchaseDetails(orderResult);
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.initOwner(MainApp.getPrimaryStage());
+            alert.setTitle("Внимание!");
+            alert.setHeaderText("Не выбран заказ");
+            alert.setContentText("Пожалуйста, выберите заказ из таблицы");
+
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    public void handleAddNewCustomer() {
+        CustomerResult tempCustomerResult = new CustomerResult();
+        boolean okClicked = MainApp.showAddNewCustomerDialog(tempCustomerResult);
+        if (okClicked) {
+            CUSTOMER_SERVICE.saveEntityResult(tempCustomerResult);
+            initialize();
+        }
+    }
+
+    @FXML
+    public void handleChoiceCustomer() {
+        if (customerResult != null) mainApp.showShop(customerResult);
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.initOwner(MainApp.getPrimaryStage());
+            alert.setTitle("Внимание!");
+            alert.setHeaderText("Не выбран клиент");
+            alert.setContentText("Пожалуйста, выберите клиента из списка");
+
+            alert.showAndWait();
         }
     }
 }

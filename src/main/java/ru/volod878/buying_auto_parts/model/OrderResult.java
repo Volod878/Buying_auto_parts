@@ -4,6 +4,9 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ru.volod878.buying_auto_parts.entity.Order;
+import ru.volod878.buying_auto_parts.entity.ShoppingCart;
+
+import java.util.List;
 
 public class OrderResult {
     private final IntegerProperty number;
@@ -81,7 +84,12 @@ public class OrderResult {
         return allPurchases;
     }
 
-    public void addAllPurchases(ShopResult shopResult, Integer amount) {
+    public void setAllPurchases(List<ShoppingCart> allPurchases) {
+        for (ShoppingCart shoppingCart: allPurchases)
+            this.allPurchases.add(new ShoppingCartResult(shoppingCart));
+    }
+
+    public void addPurchases(ShopResult shopResult, Integer amount) {
         this.allPurchases.add(new ShoppingCartResult(
                         shopResult.getName(),
                         shopResult.getPrice(),

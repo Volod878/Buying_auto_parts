@@ -51,12 +51,9 @@ public class ShopController {
     public ShopController() {
     }
 
-    @FXML
-    private void initialize() {
+    public void initController() {
         // Инициализация клиента с которым идет работа (по умолчанию - Администратор)
-        if (storeUser == null) storeUser = CUSTOMER_SERVICE.getEntityResult(1);
         customerLabel.setText(storeUser.getName());
-
 
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
         shopResults = SHOP_SERVICE.getAllEntityResults();
@@ -75,6 +72,11 @@ public class ShopController {
         // дополнительную информацию об автозапчасти.
         autoPartOfShopTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showShopDetails(newValue));
+    }
+
+    public void setCustomer(CustomerResult customer) {
+        if (customer.getName() == null) this.storeUser = CUSTOMER_SERVICE.getEntityResult(1);
+        else this.storeUser = customer;
     }
 
     /**
@@ -117,15 +119,14 @@ public class ShopController {
 
     /**
      * Вызывается, когда пользователь нажимает кнопку "В корзину"
-     * Открывает диалоговое окно для изменения выбранной автозапчасти.
      */
     @FXML
     public void handleAddAutoPart() {
         ShopResult selectedShopResult = autoPartOfShopTable.getSelectionModel().getSelectedItem();
         int number = spinner.getValue();
         if (selectedShopResult != null && number != 0) {
-            orderResult.addAllPurchases(selectedShopResult, number);
-            initialize();
+            orderResult.addPurchases(selectedShopResult, number);
+            initController();
         } else {
             // Ничего не выбрано.
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -140,6 +141,7 @@ public class ShopController {
 
     /**
      * Вызывается, когда пользователь нажимает кнопку "Корзина"
+     * Открывает окно для оплаты выбранных автозапчастей.
      */
     @FXML
     public void handleShoppingCart() {
@@ -151,13 +153,14 @@ public class ShopController {
             // Уменьшить количество запчастей в магазине
             for (ShoppingCartResult shoppingCartResult: orderResult.getAllPurchases())
                 for (ShopResult shopResult: shopResults)
-                    if (shopResult.getName().equals(shoppingCartResult.getName()))
+                    if (shopResult.getName().equals(shoppingCartResult.getName())) {
                         shopResult.setInStock(shopResult.getInStock() - shoppingCartResult.getAmount());
+                    }
 
             shopResults.forEach(SHOP_SERVICE::saveEntityResult);
             CUSTOMER_SERVICE.saveEntityResult(storeUser);
             orderResult = new OrderResult();
-            initialize();
+            initController();
         }
     }
 }

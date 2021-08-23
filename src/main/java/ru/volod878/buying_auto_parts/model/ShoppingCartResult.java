@@ -1,6 +1,7 @@
 package ru.volod878.buying_auto_parts.model;
 
 import javafx.beans.property.*;
+import ru.volod878.buying_auto_parts.entity.ShoppingCart;
 
 public class ShoppingCartResult {
     private final StringProperty name;
@@ -13,6 +14,13 @@ public class ShoppingCartResult {
         this.price = new SimpleDoubleProperty(price);
         this.amount = new SimpleIntegerProperty(amount);
         this.cost = new SimpleDoubleProperty(cost);
+    }
+
+    public ShoppingCartResult(ShoppingCart shoppingCart) {
+        this.name = new SimpleStringProperty(shoppingCart.getName());
+        this.price = new SimpleDoubleProperty(shoppingCart.getPrice());
+        this.amount = new SimpleIntegerProperty(shoppingCart.getAmount());
+        this.cost = new SimpleDoubleProperty(shoppingCart.getCost());
     }
 
     public String getName() {

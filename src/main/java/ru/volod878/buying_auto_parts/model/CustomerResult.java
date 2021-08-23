@@ -13,6 +13,14 @@ public class CustomerResult {
 
     private final ObservableList<OrderResult> allOrders;
 
+    public CustomerResult() {
+        this.id = new SimpleIntegerProperty();
+        this.name = new SimpleStringProperty();
+        this.numberOfOrders = new SimpleIntegerProperty();
+
+        this.allOrders = FXCollections.observableArrayList();
+    }
+
     public CustomerResult(Customer customer) {
         this.id = new SimpleIntegerProperty(customer.getId());
         this.name = new SimpleStringProperty(customer.getName());

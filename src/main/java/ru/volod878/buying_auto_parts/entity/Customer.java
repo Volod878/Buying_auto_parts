@@ -1,5 +1,7 @@
 package ru.volod878.buying_auto_parts.entity;
 
+import ru.volod878.buying_auto_parts.model.CustomerResult;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +25,13 @@ public class Customer {
     public Customer() {
     }
 
+    public Customer(CustomerResult customerResult) {
+        this.id = customerResult.getId();
+        this.name = customerResult.getName();
+    }
+
     public void addOrder(Order order) {
-        if (order == null) orders = new ArrayList<>();
+        if (orders == null) orders = new ArrayList<>();
         orders.add(order);
     }
 

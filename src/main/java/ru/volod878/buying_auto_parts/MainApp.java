@@ -14,10 +14,9 @@ import org.hibernate.cfg.Configuration;
 
 import ru.volod878.buying_auto_parts.entity.*;
 import ru.volod878.buying_auto_parts.model.AutoPartResult;
+import ru.volod878.buying_auto_parts.model.CustomerResult;
 import ru.volod878.buying_auto_parts.model.OrderResult;
-import ru.volod878.buying_auto_parts.view.AutoPartEditDialogController;
-import ru.volod878.buying_auto_parts.view.RootLayoutController;
-import ru.volod878.buying_auto_parts.view.ShoppingCartController;
+import ru.volod878.buying_auto_parts.view.*;
 
 import java.io.IOException;
 
@@ -47,7 +46,6 @@ public class MainApp extends Application {
         } finally {
             factory.close();
         }
-
     }
 
     @Override
@@ -60,7 +58,11 @@ public class MainApp extends Application {
 
         initRootLayout();
 
-        showShop();
+        showShop(new CustomerResult());
+    }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     /**
@@ -87,14 +89,20 @@ public class MainApp extends Application {
     /**
      * Показывает в корневом макете сведения об автозапчастях в магазине
      */
-    public void showShop() {
+    public void showShop(CustomerResult customer) {
 
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/auto-parts-of-shop.fxml"));
             AnchorPane autoPartsReview = loader.load();
 
+            // Передаём клиента в контроллер.
+            ShopController controller = loader.getController();
+            controller.setCustomer(customer);
+
+
             rootLayout.setCenter(autoPartsReview);
+            controller.initController();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,18 +132,48 @@ public class MainApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/customer.fxml"));
-            AnchorPane autoPartsReview = loader.load();
+            AnchorPane page = loader.load();
 
-            rootLayout.setCenter(autoPartsReview);
+            CustomerController controller = loader.getController();
+            controller.setMainApp(this);
+
+            rootLayout.setCenter(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void showPurchaseDetails(OrderResult orderResult) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/purchase-details.fxml"));
+            AnchorPane page = loader.load();
+
+            Stage dialogStage = new Stage();
+
+            dialogStage.getIcons()
+                    .add(new Image("file:src/main/resources/ru/volod878/buying_auto_parts/images/icon.png"));
+            dialogStage.setTitle("Детали покупки");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            PurchaseDetailsController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setOrder(orderResult);
+            controller.initTable();
+
+            // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+            dialogStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    public static Stage getPrimaryStage() {
-        return primaryStage;
-    }
+
 
     /**
      * Открывает диалоговое окно для изменения деталей указанной автозапчасти.
@@ -207,6 +245,38 @@ public class MainApp extends Application {
             controller.setOrder(orderResult);
             controller.setCustomerLabel();
             controller.initTable();
+
+            // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+            dialogStage.showAndWait();
+
+            return controller.isOkClicked();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean showAddNewCustomerDialog(CustomerResult customerResult) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/customer-add-dialog.fxml"));
+            AnchorPane page = loader.load();
+
+            Stage dialogStage = new Stage();
+
+            dialogStage.getIcons()
+                    .add(new Image("file:src/main/resources/ru/volod878/buying_auto_parts/images/icon.png"));
+            dialogStage.setTitle("Добавить клиента");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Передаём CustomerResult в контроллер.
+            CustomerAddDialogController controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setCustomer(customerResult);
 
             // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
             dialogStage.showAndWait();

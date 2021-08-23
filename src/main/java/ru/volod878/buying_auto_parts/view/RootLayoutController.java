@@ -2,6 +2,7 @@ package ru.volod878.buying_auto_parts.view;
 
 import javafx.fxml.FXML;
 import ru.volod878.buying_auto_parts.MainApp;
+import ru.volod878.buying_auto_parts.model.CustomerResult;
 
 public class RootLayoutController {
 
@@ -38,7 +39,7 @@ public class RootLayoutController {
      */
     @FXML
     public void handleAutoPartsShop() {
-        mainApp.showShop();
+        mainApp.showShop(new CustomerResult());
     }
 
     //todo поиск запчастей

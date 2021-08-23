@@ -2,14 +2,13 @@ package ru.volod878.buying_auto_parts.view;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import ru.volod878.buying_auto_parts.MainApp;
 import ru.volod878.buying_auto_parts.model.AutoPartResult;
+import ru.volod878.buying_auto_parts.model.ShopResult;
 import ru.volod878.buying_auto_parts.service.AutoPartService;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
+import ru.volod878.buying_auto_parts.service.ShopService;
 
 public class WarehouseController {
 
@@ -20,7 +19,7 @@ public class WarehouseController {
     @FXML
     private TableColumn<AutoPartResult, Double> priceColumn;
     @FXML
-    private TableColumn<AutoPartResult, Integer> inStockColumn;
+    private TableColumn<AutoPartResult, Integer> amountColumn;
     @FXML
     private TableColumn<AutoPartResult, Integer> deliveryPeriodColumn;
 
@@ -31,12 +30,17 @@ public class WarehouseController {
     @FXML
     private Label priceLabel;
     @FXML
-    private Label inStockLabel;
+    private Label amountLabel;
     @FXML
     private Label deliveryPeriodLabel;
 
+    @FXML
+    public Spinner<Integer> spinner;
+
     private static final BuyingAutoService<AutoPartResult>
-            BUYING_AUTO_SERVICE = new AutoPartService(MainApp.getFactory());
+            AUTO_PART_SERVICE = new AutoPartService(MainApp.getFactory());
+    private static final BuyingAutoService<ShopResult>
+            SHOP_SERVICE = new ShopService(MainApp.getFactory());
 
     public WarehouseController() {
     }
@@ -48,12 +52,12 @@ public class WarehouseController {
     @FXML
     private void initialize() {
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
-        ObservableList<AutoPartResult> autoPartResults = BUYING_AUTO_SERVICE.getAllEntityResults();
+        ObservableList<AutoPartResult> autoPartResults = AUTO_PART_SERVICE.getAllEntityResults();
         autoPartTable.setItems(autoPartResults);
 
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         priceColumn.setCellValueFactory(cellData -> cellData.getValue().priceProperty().asObject());
-        inStockColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
+        amountColumn.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
         deliveryPeriodColumn.setCellValueFactory(cellData
                 -> cellData.getValue().deliveryPeriodProperty().asObject());
 
@@ -75,16 +79,50 @@ public class WarehouseController {
             // Заполняем метки информацией из объекта AutoPart.
             nameLabel.setText(autoPartResult.getName());
             priceLabel.setText(Double.toString(autoPartResult.getPrice()));
-            inStockLabel.setText(Integer.toString(autoPartResult.getAmount()));
+            amountLabel.setText(Integer.toString(autoPartResult.getAmount()));
             deliveryPeriodLabel.setText(Integer.toString(autoPartResult.getDeliveryPeriod()));
             vendorCodeLabel.setText(Integer.toString(autoPartResult.getVendorCode()));
+
+            // Устанавливаем максимальное количество автозапчастей
+            // равное их количеству на складе
+            int maxValue = autoPartResult.getAmount();
+            SpinnerValueFactory<Integer> valueFactory =
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue, 0);
+            spinner.setValueFactory(valueFactory);
         } else {
-            // Если AutoPart = null, то убираем весь текст.
             nameLabel.setText("");
             priceLabel.setText("");
-            inStockLabel.setText("");
+            amountLabel.setText("");
             deliveryPeriodLabel.setText("");
             vendorCodeLabel.setText("");
+        }
+    }
+
+    /**
+     * Вызывается, когда пользователь нажимает кнопку "В магазин"
+     * Выбранное количество оправляется в магазин
+     */
+    @FXML
+    public void handleInShop() {
+        AutoPartResult selectedAutoPartResult = autoPartTable.getSelectionModel().getSelectedItem();
+        int number = spinner.getValue();
+        if (selectedAutoPartResult != null && number != 0) {
+            selectedAutoPartResult.setAmount(selectedAutoPartResult.getAmount() - number);
+            AUTO_PART_SERVICE.saveEntityResult(selectedAutoPartResult);
+
+            ShopResult shopResult = SHOP_SERVICE.getEntityResult(selectedAutoPartResult.getVendorCode());
+            shopResult.setInStock(shopResult.getInStock() + number);
+            SHOP_SERVICE.saveEntityResult(shopResult);
+
+            initialize();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.initOwner(MainApp.getPrimaryStage());
+            alert.setTitle("Внимание!");
+            alert.setHeaderText("Не выбраны автозапчасть или количество");
+            alert.setContentText("Пожалуйста, выберите автозапчасть и укажите количество.");
+
+            alert.showAndWait();
         }
     }
 
@@ -97,7 +135,7 @@ public class WarehouseController {
         AutoPartResult tempAutoPartResult = new AutoPartResult();
         boolean okClicked = MainApp.showAutoPartEditDialog(tempAutoPartResult);
         if (okClicked) {
-            BUYING_AUTO_SERVICE.saveEntityResult(tempAutoPartResult);
+            AUTO_PART_SERVICE.saveEntityResult(tempAutoPartResult);
             initialize();
         }
     }
@@ -112,7 +150,7 @@ public class WarehouseController {
         if (selectedAutoPartResult != null) {
             boolean okClicked = MainApp.showAutoPartEditDialog(selectedAutoPartResult);
             if (okClicked) {
-                BUYING_AUTO_SERVICE.saveEntityResult(selectedAutoPartResult);
+                AUTO_PART_SERVICE.saveEntityResult(selectedAutoPartResult);
                 initialize();
             }
 
@@ -135,7 +173,7 @@ public class WarehouseController {
     private void handleDeleteAutoPart() {
         int selectedIndex = autoPartTable.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
-            BUYING_AUTO_SERVICE.deleteEntityResult(
+            AUTO_PART_SERVICE.deleteEntityResult(
                     autoPartTable.getSelectionModel().getSelectedItem().getVendorCode());
             initialize();
         } else {
