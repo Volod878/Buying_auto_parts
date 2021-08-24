@@ -7,6 +7,8 @@ import ru.volod878.buying_auto_parts.dao.BuyingAutoDAO;
 import ru.volod878.buying_auto_parts.dao.CustomerDAO;
 import ru.volod878.buying_auto_parts.entity.*;
 import ru.volod878.buying_auto_parts.model.CustomerResult;
+import ru.volod878.buying_auto_parts.model.OrderResult;
+import ru.volod878.buying_auto_parts.util.Status;
 
 import java.util.List;
 
@@ -29,11 +31,18 @@ public class CustomerService implements BuyingAutoService<CustomerResult> {
     @Override
     public void saveEntityResult(CustomerResult customerResult) {
         Customer customer = new Customer(customerResult);
-        int lastOrder = customerResult.getAllOrders().size() - 1;
-        if (lastOrder >= 0) {
-            Order order = new Order(customerResult.getAllOrders().get(lastOrder));
-            order.setCustomer(customer);
-            customer.addOrder(order);
+        if (customerResult.getAllOrders().size() > 0) {
+            int size = customerResult.getAllOrders().size();
+            for (int i = size-1; i >=0; i--) {
+                OrderResult orderResult = customerResult.getAllOrders().get(i);
+                if (orderResult.getCustomerResult() != null) {
+                    Order order = new Order(orderResult);
+                    order.setCustomer(customer);
+                    customer.addOrder(order);
+                    if (orderResult.getStatus().equals(Status.EXECUTION.getName())
+                            && orderResult.getNumber() == 0) break;
+                }
+            }
         }
         buyingAutoDAO.saveEntity(customer);
     }

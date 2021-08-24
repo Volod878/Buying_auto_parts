@@ -27,7 +27,9 @@ public class CustomerResult {
         this.numberOfOrders = new SimpleIntegerProperty(customer.getOrders().size());
 
         this.allOrders = FXCollections.observableArrayList();
-        for (Order order: customer.getOrders()) this.allOrders.add(new OrderResult(order));
+        for (Order order: customer.getOrders())
+            this.allOrders.add(
+                    new OrderResult(order));
     }
 
     public int getId() {

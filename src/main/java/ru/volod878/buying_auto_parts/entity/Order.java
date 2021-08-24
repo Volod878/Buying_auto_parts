@@ -4,6 +4,8 @@ import ru.volod878.buying_auto_parts.model.OrderResult;
 import ru.volod878.buying_auto_parts.model.ShoppingCartResult;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +19,12 @@ public class Order {
 
     @Column(name = "total_cost")
     private double totalCost;
+
+    @Column(name = "purchase_date")
+    private LocalDateTime purchaseDate;
+
+    @Column(name = "status")
+    private String status;
 
     @OneToMany(cascade = {
             CascadeType.ALL
@@ -36,7 +44,12 @@ public class Order {
     }
 
     public Order(OrderResult orderResult) {
+        this.id = orderResult.getNumber();
         this.totalCost = orderResult.getTotalCost();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String data = orderResult.getPurchaseDate().format(dateTimeFormatter);
+        this.purchaseDate = LocalDateTime.parse(data, dateTimeFormatter);
+        this.status = orderResult.getStatus();
 
         this.shoppingCart = new ArrayList<>();
         for (ShoppingCartResult shoppingCartResult: orderResult.getAllPurchases())
@@ -59,6 +72,14 @@ public class Order {
         this.totalCost = totalCost;
     }
 
+    public LocalDateTime getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     public List<ShoppingCart> getShoppingCart() {
         return shoppingCart;
     }
@@ -73,5 +94,13 @@ public class Order {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

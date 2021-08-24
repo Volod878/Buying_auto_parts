@@ -11,6 +11,8 @@ import ru.volod878.buying_auto_parts.model.OrderResult;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
 import ru.volod878.buying_auto_parts.service.CustomerService;
 
+import java.time.LocalDateTime;
+
 public class CustomerController {
     @FXML
     public TableView<CustomerResult> customerTable;
@@ -26,7 +28,7 @@ public class CustomerController {
     @FXML
     public TableColumn<OrderResult, Double> totalCostColumn;
     @FXML
-    public TableColumn<OrderResult, String> dateColumn;
+    public TableColumn<OrderResult, LocalDateTime> dateColumn;
     @FXML
     public TableColumn<OrderResult, String> statusColumn;
 
@@ -76,7 +78,7 @@ public class CustomerController {
 
             numberColumn.setCellValueFactory(cellData -> cellData.getValue().numberProperty().asObject());
             totalCostColumn.setCellValueFactory(cellData -> cellData.getValue().totalCostProperty().asObject());
-            dateColumn.setCellValueFactory(cellData -> cellData.getValue().dataProperty());
+            dateColumn.setCellValueFactory(cellData -> cellData.getValue().purchaseDateProperty());
             statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
             ordersTable.getSelectionModel().selectedItemProperty().addListener(

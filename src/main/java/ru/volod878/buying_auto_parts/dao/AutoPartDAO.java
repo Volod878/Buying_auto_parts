@@ -34,11 +34,9 @@ public class AutoPartDAO implements BuyingAutoDAO<AutoPart> {
 
     @Override
     public void saveEntity(AutoPart autoPart) {
-
-        Shop shop;
-
         try(Session session = factory.getCurrentSession()) {
 
+            Shop shop;
             int id = autoPart.getId();
 
             session.beginTransaction();

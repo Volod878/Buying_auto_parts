@@ -50,14 +50,10 @@ public class CustomerDAO implements BuyingAutoDAO<Customer> {
         try(Session session = factory.getCurrentSession()) {
             session.beginTransaction();
 
-//            customer = session.get(Customer.class, id);
 
             Query<Customer> query = session.createQuery("from Customer where id=:customerId");
             query.setParameter("customerId", id);
             customer = query.getSingleResult();
-
-//            customer = session.createQuery("from Customer where id =:id", Customer.class).getSingleResult();
-
 
             session.getTransaction().commit();
         }

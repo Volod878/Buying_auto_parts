@@ -6,12 +6,15 @@ import javafx.collections.ObservableList;
 import ru.volod878.buying_auto_parts.entity.Order;
 import ru.volod878.buying_auto_parts.entity.ShoppingCart;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class OrderResult {
     private final IntegerProperty number;
     private final DoubleProperty totalCost;
-    private final StringProperty data;
+    private final ObjectProperty<LocalDateTime> purchaseDate;
     private final StringProperty status;
 
     private final ObservableList<ShoppingCartResult> allPurchases = FXCollections.observableArrayList();
@@ -21,15 +24,17 @@ public class OrderResult {
     public OrderResult() {
         this.number = new SimpleIntegerProperty();
         this.totalCost = new SimpleDoubleProperty();
-        this.data = new SimpleStringProperty();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String data = LocalDateTime.now().format(dateTimeFormatter);
+        this.purchaseDate = new SimpleObjectProperty<>(LocalDateTime.parse(data, dateTimeFormatter));
         this.status = new SimpleStringProperty();
     }
 
     public OrderResult(Order order) {
         this.number = new SimpleIntegerProperty(order.getId());
         this.totalCost = new SimpleDoubleProperty(order.getTotalCost());
-        this.data = new SimpleStringProperty();
-        this.status = new SimpleStringProperty();
+        this.purchaseDate = new SimpleObjectProperty<>(order.getPurchaseDate());
+        this.status = new SimpleStringProperty(order.getStatus());
     }
 
     public int getNumber() {
@@ -56,16 +61,16 @@ public class OrderResult {
         this.totalCost.set(totalCost);
     }
 
-    public String getData() {
-        return data.get();
+    public LocalDateTime getPurchaseDate() {
+        return purchaseDate.get();
     }
 
-    public StringProperty dataProperty() {
-        return data;
+    public ObjectProperty<LocalDateTime> purchaseDateProperty() {
+        return purchaseDate;
     }
 
-    public void setData(String data) {
-        this.data.set(data);
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        this.purchaseDate.set(purchaseDate);
     }
 
     public String getStatus() {
@@ -90,11 +95,12 @@ public class OrderResult {
     }
 
     public void addPurchases(ShopResult shopResult, Integer amount) {
+        BigDecimal total = BigDecimal.valueOf(shopResult.getPrice()).multiply(new BigDecimal(amount));
         this.allPurchases.add(new ShoppingCartResult(
                         shopResult.getName(),
                         shopResult.getPrice(),
                         amount,
-                        shopResult.getPrice() * amount
+                        total.doubleValue()
                 )
         );
     }

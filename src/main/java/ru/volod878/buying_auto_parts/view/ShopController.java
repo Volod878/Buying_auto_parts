@@ -1,5 +1,6 @@
 package ru.volod878.buying_auto_parts.view;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -9,8 +10,13 @@ import ru.volod878.buying_auto_parts.model.*;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
 import ru.volod878.buying_auto_parts.service.CustomerService;
 import ru.volod878.buying_auto_parts.service.ShopService;
+import ru.volod878.buying_auto_parts.util.GoodsDelivery;
+import ru.volod878.buying_auto_parts.util.Status;
 
-
+/**
+ * Класс контроллер.
+ * Управляет всеми действиями в магазине
+ */
 public class ShopController {
     @FXML
     public Label customerLabel;
@@ -146,20 +152,43 @@ public class ShopController {
     @FXML
     public void handleShoppingCart() {
         orderResult.setCustomerResult(storeUser);
+
         boolean okClicked = MainApp.showShoppingCardDialog(orderResult);
         if (okClicked) {
+            orderResult.setStatus(Status.EXECUTION.getName());
             storeUser.addOrder(orderResult);
             storeUser.setNumberOfOrders(storeUser.getAllOrders().size());
             // Уменьшить количество запчастей в магазине
+            ObservableList<ShopResult>  tempShopResults = FXCollections.observableArrayList();
             for (ShoppingCartResult shoppingCartResult: orderResult.getAllPurchases())
                 for (ShopResult shopResult: shopResults)
                     if (shopResult.getName().equals(shoppingCartResult.getName())) {
                         shopResult.setInStock(shopResult.getInStock() - shoppingCartResult.getAmount());
+                        tempShopResults.add(shopResult);
                     }
 
-            shopResults.forEach(SHOP_SERVICE::saveEntityResult);
+
+            // Отправляем товар клиенту отдельным потоком
+
+            GoodsDelivery goodsDelivery = new GoodsDelivery();
+            goodsDelivery.setShopResults(tempShopResults);
+            goodsDelivery.setCustomerService(CUSTOMER_SERVICE);
+            goodsDelivery.setCustomerResult(storeUser);
+            goodsDelivery.setOrderResult(orderResult);
+            Thread deliveryThread = new Thread(goodsDelivery);
+            deliveryThread.start();
+
+            tempShopResults.forEach(SHOP_SERVICE::saveEntityResult);
             CUSTOMER_SERVICE.saveEntityResult(storeUser);
             orderResult = new OrderResult();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initOwner(MainApp.getPrimaryStage());
+            alert.setTitle("Служба доставки");
+            alert.setHeaderText("Товар отправлен клиенту");
+            alert.setContentText("Ожидаемый срок доставки: " + goodsDelivery.getDeliveryPeriod() + " сек.");
+            alert.showAndWait();
+
             initController();
         }
     }

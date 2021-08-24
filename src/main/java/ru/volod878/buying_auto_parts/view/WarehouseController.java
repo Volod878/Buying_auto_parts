@@ -9,7 +9,13 @@ import ru.volod878.buying_auto_parts.model.ShopResult;
 import ru.volod878.buying_auto_parts.service.AutoPartService;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
 import ru.volod878.buying_auto_parts.service.ShopService;
+import ru.volod878.buying_auto_parts.util.GoodsDelivery;
 
+
+/**
+ * Класс-контроллер.
+ * Управляет всеми действиями на складе
+ */
 public class WarehouseController {
 
     @FXML
@@ -45,10 +51,6 @@ public class WarehouseController {
     public WarehouseController() {
     }
 
-    /**
-     * Инициализация класса-контроллера. Этот метод вызывается автоматически
-     * после того, как fxml-файл будет загружен.
-     */
     @FXML
     private void initialize() {
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
@@ -65,7 +67,7 @@ public class WarehouseController {
         showAutoPartDetails(null);
 
         // Слушаем изменения выбора, и при изменении отображаем
-        // дополнительную информацию об автозапчасти.
+        // дополнительную информацию об автозапчасти
         autoPartTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showAutoPartDetails(newValue));
     }
@@ -76,15 +78,17 @@ public class WarehouseController {
      */
     private void showAutoPartDetails(AutoPartResult autoPartResult) {
         if (autoPartResult != null) {
-            // Заполняем метки информацией из объекта AutoPart.
+            // Заполняем метки информацией из объекта AutoPartResult
             nameLabel.setText(autoPartResult.getName());
             priceLabel.setText(Double.toString(autoPartResult.getPrice()));
             amountLabel.setText(Integer.toString(autoPartResult.getAmount()));
             deliveryPeriodLabel.setText(Integer.toString(autoPartResult.getDeliveryPeriod()));
             vendorCodeLabel.setText(Integer.toString(autoPartResult.getVendorCode()));
 
-            // Устанавливаем максимальное количество автозапчастей
-            // равное их количеству на складе
+            // Устанавливаем максимальное количество автозапчастей,
+            // которое можно выбрать для отправки в магазин.
+            // Максимальное значение равно количеству выбранной автозапчасти
+            // которые есть на складе
             int maxValue = autoPartResult.getAmount();
             SpinnerValueFactory<Integer> valueFactory =
                     new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue, 0);
@@ -104,26 +108,45 @@ public class WarehouseController {
      */
     @FXML
     public void handleInShop() {
+        // Инициализируем автозапчасть, которую оправляем в магазин
         AutoPartResult selectedAutoPartResult = autoPartTable.getSelectionModel().getSelectedItem();
         int number = spinner.getValue();
+
+        // Поля для сообщения об отправке
+        String title, headerText, contentText;
+        Alert alert;
+
         if (selectedAutoPartResult != null && number != 0) {
+            // Уменьшаем количество автозапчастей на складе
             selectedAutoPartResult.setAmount(selectedAutoPartResult.getAmount() - number);
             AUTO_PART_SERVICE.saveEntityResult(selectedAutoPartResult);
 
-            ShopResult shopResult = SHOP_SERVICE.getEntityResult(selectedAutoPartResult.getVendorCode());
-            shopResult.setInStock(shopResult.getInStock() + number);
-            SHOP_SERVICE.saveEntityResult(shopResult);
+            // Отправляем товар в магазин отдельным потоком
+            GoodsDelivery goodsDelivery = new GoodsDelivery();
+            goodsDelivery.setAutoPartResult(selectedAutoPartResult);
+            goodsDelivery.setShopService(SHOP_SERVICE);
+            goodsDelivery.setNumber(number);
+            Thread deliveryThread = new Thread(goodsDelivery);
+            deliveryThread.start();
+
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            title = "Служба доставки";
+            headerText = "Товар отправлен в магазин";
+            contentText = "Ожидаемый срок доставки: " + selectedAutoPartResult.getDeliveryPeriod() + " сек.";
 
             initialize();
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.initOwner(MainApp.getPrimaryStage());
-            alert.setTitle("Внимание!");
-            alert.setHeaderText("Не выбраны автозапчасть или количество");
-            alert.setContentText("Пожалуйста, выберите автозапчасть и укажите количество.");
-
-            alert.showAndWait();
+            alert = new Alert(Alert.AlertType.WARNING);
+            title = "Внимание!";
+            headerText = "Не выбраны автозапчасть или количество";
+            contentText = "Пожалуйста, выберите автозапчасть и укажите количество";
         }
+
+        alert.initOwner(MainApp.getPrimaryStage());
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.showAndWait();
     }
 
     /**

@@ -30,6 +30,8 @@ CREATE TABLE buying_auto.orders (
                                     id int NOT NULL AUTO_INCREMENT,
                                     PRIMARY KEY (id),
                                     total_cost DOUBLE NOT NULL,
+                                    purchase_date DATETIME NOT NULL,
+                                    status VARCHAR(50) NOT NULL,
                                     customer_id int NOT NULL,
                                     FOREIGN KEY (customer_id) REFERENCES buying_auto.customers(id)
 );
