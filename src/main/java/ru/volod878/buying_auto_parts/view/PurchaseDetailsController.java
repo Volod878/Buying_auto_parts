@@ -12,7 +12,9 @@ import ru.volod878.buying_auto_parts.model.ShoppingCartResult;
 import ru.volod878.buying_auto_parts.service.BuyingAutoService;
 import ru.volod878.buying_auto_parts.service.OrderService;
 
-
+/**
+ * Окно для просмотра списка товаров выбранного заказа клиента.
+ */
 public class PurchaseDetailsController {
 
 
@@ -37,10 +39,11 @@ public class PurchaseDetailsController {
     public static final BuyingAutoService<OrderResult>
             SHOPPING_CART_SERVICE = new OrderService(MainApp.getFactory());
 
-    public PurchaseDetailsController() {
-    }
-
+    /**
+     * Инициализация таблицы со списком покупок
+     */
     public void initTable() {
+        // Берем информацию о заказе из БД и отображаем ее в таблице
         ObservableList<ShoppingCartResult> shoppingCartResult =
                 SHOPPING_CART_SERVICE.getEntityResult(orderResult.getNumber())
                         .getAllPurchases();
@@ -64,7 +67,7 @@ public class PurchaseDetailsController {
     }
 
     /**
-     * Устанавливаем заказ, который нужно оплатить
+     * Устанавливаем заказ для просмотра
      */
     public void setOrder(OrderResult orderResult) {
         this.orderResult = orderResult;
@@ -72,6 +75,7 @@ public class PurchaseDetailsController {
 
     /**
      * Вызывается, когда пользователь кликнул по кнопке Назад.
+     * Закрывается диалоговое окно
      */
     @FXML
     private void handleOk() {

@@ -6,6 +6,10 @@ import javafx.collections.ObservableList;
 import ru.volod878.buying_auto_parts.entity.Customer;
 import ru.volod878.buying_auto_parts.entity.Order;
 
+/**
+ * Класс-модель для клиентов.
+ * С данным классом работает контроллер
+ */
 public class CustomerResult {
     private final IntegerProperty id;
     private final StringProperty name;

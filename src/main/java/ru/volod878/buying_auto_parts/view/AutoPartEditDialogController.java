@@ -30,7 +30,7 @@ public class AutoPartEditDialogController {
     }
 
     /**
-     * Устанавливает сцену для этого окна.
+     * Устанавливает сцену для этого окна
      */
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -57,6 +57,7 @@ public class AutoPartEditDialogController {
 
     /**
      * Вызывается, когда пользователь кликнул по кнопке Ок.
+     * Данные в модели обновляются и окно закрывается
      */
     @FXML
     private void handleOk() {
@@ -73,6 +74,7 @@ public class AutoPartEditDialogController {
 
     /**
      * Вызывается, когда пользователь кликнул по кнопке Отмена.
+     * Окно закрывается
      */
     @FXML
     private void handleCancel() {

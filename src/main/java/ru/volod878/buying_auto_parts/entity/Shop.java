@@ -4,6 +4,9 @@ import ru.volod878.buying_auto_parts.model.ShopResult;
 
 import javax.persistence.*;
 
+/**
+ * Класс-entity связывающий объекты Shop с таблицей в БД
+ */
 @Entity
 @Table(name = "shop")
 public class Shop {

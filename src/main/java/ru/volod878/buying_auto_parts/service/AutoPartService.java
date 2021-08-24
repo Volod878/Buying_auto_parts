@@ -12,6 +12,10 @@ import ru.volod878.buying_auto_parts.model.AutoPartResult;
 
 import java.util.List;
 
+/**
+ * Класс отвечает за работу с сущностями AutoPart и моделями AutoPartResult.
+ * Данный класс адаптирует эти объекты между собой
+ */
 public class AutoPartService implements BuyingAutoService<AutoPartResult> {
 
     private final BuyingAutoDAO<AutoPart> buyingAutoDAO;

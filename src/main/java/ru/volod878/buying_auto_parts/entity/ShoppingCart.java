@@ -4,6 +4,9 @@ import ru.volod878.buying_auto_parts.model.ShoppingCartResult;
 
 import javax.persistence.*;
 
+/**
+ * Класс-entity связывающий объекты ShoppingCart с таблицей в БД
+ */
 @Entity
 @Table(name = "shopping_cart")
 public class ShoppingCart {

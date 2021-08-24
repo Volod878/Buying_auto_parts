@@ -6,6 +6,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс-entity связывающий объекты Customer с таблицей в БД
+ */
 @Entity
 @Table(name = "customers")
 public class Customer {

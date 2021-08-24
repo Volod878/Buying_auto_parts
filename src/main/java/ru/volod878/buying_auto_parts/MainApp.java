@@ -31,6 +31,7 @@ public class MainApp extends Application {
     }
 
     public static void main(String[] args) {
+        // Устанавливаем соединение с БД и запускаем приложение
         try {
             factory = new Configuration()
                     .configure("hibernate.cfg.xml")
@@ -66,7 +67,7 @@ public class MainApp extends Application {
     }
 
     /**
-     * Инициализирует корневой макет.
+     * Инициализирует корневой макет
      */
     public void initRootLayout() {
         try {
@@ -77,8 +78,7 @@ public class MainApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
 
-
-            // Даём контроллеру доступ к главному приложению.
+            // Даём контроллеру доступ к главному приложению
             RootLayoutController controller = loader.getController();
             controller.setMainApp(this);
         } catch (IOException e) {
@@ -143,6 +143,11 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Открывает окно для просмотра списка товаров выбранного заказа клиента.
+     *
+     * @param orderResult заказ, который будет открыт
+     */
     public static void showPurchaseDetails(OrderResult orderResult) {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -160,6 +165,7 @@ public class MainApp extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
+            // Передаём заказ в контроллер.
             PurchaseDetailsController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setOrder(orderResult);
@@ -171,9 +177,6 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
-
-
-
 
     /**
      * Открывает диалоговое окно для изменения деталей указанной автозапчасти.
@@ -239,7 +242,7 @@ public class MainApp extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            // Передаём OrderResult в контроллер.
+            // Передаём заказ в контроллер.
             ShoppingCartController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setOrder(orderResult);
@@ -256,6 +259,14 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Открывает диалоговое окно для добавления нового клиента.
+     * Если пользователь кликнул Добавить, то изменения сохраняются в предоставленном
+     * объекте клиента и возвращается значение true.
+     *
+     * @param customerResult - объект клиента, который будет добавлен
+     * @return true, если пользователь кликнул Ок, в противном случае false.
+     */
     public static boolean showAddNewCustomerDialog(CustomerResult customerResult) {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -285,6 +296,34 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * Открывает окно со справкой о приложении
+     */
+    public void showHelp() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/help.fxml"));
+            AnchorPane page = loader.load();
+
+            Stage dialogStage = new Stage();
+
+            dialogStage.getIcons()
+                    .add(new Image("file:src/main/resources/ru/volod878/buying_auto_parts/images/icon.png"));
+            dialogStage.setTitle("Справка");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            // Отображаем диалоговое окно и ждём, пока пользователь его не закроет
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -6,6 +6,9 @@ import ru.volod878.buying_auto_parts.entity.Shop;
 
 import java.util.List;
 
+/**
+ * Класс-DAO отвечает за работу с сущностями Shop
+ */
 public class ShopDAO implements BuyingAutoDAO<Shop> {
 
     private final SessionFactory factory;

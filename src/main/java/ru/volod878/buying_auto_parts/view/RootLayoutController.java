@@ -4,6 +4,9 @@ import javafx.fxml.FXML;
 import ru.volod878.buying_auto_parts.MainApp;
 import ru.volod878.buying_auto_parts.model.CustomerResult;
 
+/**
+ * Главное окно с лентой меню
+ */
 public class RootLayoutController {
 
     private MainApp mainApp;
@@ -42,10 +45,12 @@ public class RootLayoutController {
         mainApp.showShop(new CustomerResult());
     }
 
-    //todo поиск запчастей
-
-    //todo
+    /**
+     * Вызывается, когда пользователь нажимает кнопку "Справка"
+     * Открывает информация о приложении
+     */
     @FXML
     public void handleHelp() {
+        mainApp.showHelp();
     }
 }

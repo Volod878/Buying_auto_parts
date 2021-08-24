@@ -10,6 +10,10 @@ import ru.volod878.buying_auto_parts.model.OrderResult;
 
 import java.util.List;
 
+/**
+ * Класс отвечает за работу с сущностями Order и моделями OrderResult.
+ * Данный класс адаптирует эти объекты между собой
+ */
 public class OrderService implements BuyingAutoService<OrderResult> {
 
     private final BuyingAutoDAO<Order> buyingAutoDAO;

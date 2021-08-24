@@ -64,6 +64,7 @@ public class GoodsDelivery implements Runnable {
         if (autoPartResult != null) {
             // Получаем текущее количество товара в магазине
             ShopResult shopResult = shopService.getEntityResult(autoPartResult.getVendorCode());
+            // Сохраняем в БД обновленные данные
             shopResult.setInStock(shopResult.getInStock() + number);
             shopService.saveEntityResult(shopResult);
         }
@@ -82,6 +83,19 @@ public class GoodsDelivery implements Runnable {
                 .ifPresent(o -> thisOrderResult.setNumber(o.getNumber()));
     }
 
+    /**
+     * Устанавливаем список автозапчастей из магазина, который оплатил клиент.
+     * Определяем срок доставки по максимальному значению
+     */
+    public void setShopResults(ObservableList<ShopResult> shopResults) {
+        shopResults.stream()
+                .peek(this.shopResults::add)
+                .mapToInt(ShopResult::getDeliveryPeriod)
+                .max()
+                .ifPresent(deliveryPeriod -> this.deliveryPeriod = deliveryPeriod);
+
+    }
+
     public void setShopService(BuyingAutoService<ShopResult> shopService) {
         this.shopService = shopService;
     }
@@ -97,15 +111,6 @@ public class GoodsDelivery implements Runnable {
 
     public void setCustomerResult(CustomerResult customer) {
         this.customer = customer;
-    }
-
-    public void setShopResults(ObservableList<ShopResult> shopResults) {
-        shopResults.stream()
-                .peek(this.shopResults::add)
-                .mapToInt(ShopResult::getDeliveryPeriod)
-                .max()
-                .ifPresent(deliveryPeriod -> this.deliveryPeriod = deliveryPeriod);
-
     }
 
     public void setOrderResult(OrderResult orderResult) {

@@ -6,6 +6,9 @@ import ru.volod878.buying_auto_parts.entity.Order;
 
 import java.util.List;
 
+/**
+ * Класс-DAO отвечает за работу с сущностями Order
+ */
 public class OrderDAO implements BuyingAutoDAO<Order> {
 
     private final SessionFactory factory;

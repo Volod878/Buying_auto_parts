@@ -7,6 +7,9 @@ import ru.volod878.buying_auto_parts.entity.Customer;
 
 import java.util.List;
 
+/**
+ * Класс-DAO отвечает за работу с сущностями Customer
+ */
 public class CustomerDAO implements BuyingAutoDAO<Customer> {
 
     private final SessionFactory factory;

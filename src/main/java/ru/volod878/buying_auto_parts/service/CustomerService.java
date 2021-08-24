@@ -12,6 +12,10 @@ import ru.volod878.buying_auto_parts.util.Status;
 
 import java.util.List;
 
+/**
+ * Класс отвечает за работу с сущностями Customer и моделями CustomerResult.
+ * Данный класс адаптирует эти объекты между собой
+ */
 public class CustomerService implements BuyingAutoService<CustomerResult> {
 
     private final BuyingAutoDAO<Customer> buyingAutoDAO;
@@ -31,6 +35,9 @@ public class CustomerService implements BuyingAutoService<CustomerResult> {
     @Override
     public void saveEntityResult(CustomerResult customerResult) {
         Customer customer = new Customer(customerResult);
+
+        // Находим все заказы которые не привязаны к клиентам
+        // и связываем их между собой
         if (customerResult.getAllOrders().size() > 0) {
             int size = customerResult.getAllOrders().size();
             for (int i = size-1; i >=0; i--) {
@@ -39,6 +46,9 @@ public class CustomerService implements BuyingAutoService<CustomerResult> {
                     Order order = new Order(orderResult);
                     order.setCustomer(customer);
                     customer.addOrder(order);
+
+                    // Если в текущий момент несколько активных заказов,
+                    // то в момент создания заказа нужно сохранить только последний
                     if (orderResult.getStatus().equals(Status.EXECUTION.getName())
                             && orderResult.getNumber() == 0) break;
                 }

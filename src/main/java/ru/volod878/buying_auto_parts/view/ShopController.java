@@ -54,11 +54,10 @@ public class ShopController {
     private OrderResult orderResult = new OrderResult();
     private ObservableList<ShopResult> shopResults;
 
-    public ShopController() {
-    }
-
+    /**
+     * Инициализация таблицы с авто запчастями
+     */
     public void initController() {
-        // Инициализация клиента с которым идет работа (по умолчанию - Администратор)
         customerLabel.setText(storeUser.getName());
 
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
@@ -80,7 +79,11 @@ public class ShopController {
                 (observable, oldValue, newValue) -> showShopDetails(newValue));
     }
 
+    /**
+     * Устанавливаем клиента с которым будет работа
+     */
     public void setCustomer(CustomerResult customer) {
+        // Инициализация клиента с которым идет работа (по умолчанию - Администратор)
         if (customer.getName() == null) this.storeUser = CUSTOMER_SERVICE.getEntityResult(1);
         else this.storeUser = customer;
     }
@@ -91,14 +94,14 @@ public class ShopController {
      */
     private void showShopDetails(ShopResult shopResult) {
         if (shopResult != null) {
-            // Заполняем метки информацией из объекта AutoPart.
+            // Заполняем метки информацией из объекта ShopResult.
             nameLabel.setText(shopResult.getName());
             priceLabel.setText(Double.toString(shopResult.getPrice()));
             inStockLabel.setText(Integer.toString(shopResult.getInStock()));
             deliveryPeriodLabel.setText(Integer.toString(shopResult.getDeliveryPeriod()));
             vendorCodeLabel.setText(Integer.toString(shopResult.getVendorCode()));
 
-            // Устанавливаем максимальное количество товара
+            // Устанавливаем максимальное количество товара которое можно выбрать
             // равное их количеству в магазине
             int maxValue = shopResult.getInStock();
 
@@ -108,10 +111,13 @@ public class ShopController {
                     if (shoppingCartResult.getName().equals(shopResult.getName()))
                         maxValue -= shoppingCartResult.getAmount();
 
+
+                    // Присваиваем новое значение спиннеру с учетом товара в корзине
             SpinnerValueFactory<Integer> valueFactory =
                     new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue, 0);
             spinner.setValueFactory(valueFactory);
         } else {
+            // Если автозапчасть не выбрана, очищаем данные
             nameLabel.setText("");
             priceLabel.setText("");
             inStockLabel.setText("");
@@ -128,8 +134,10 @@ public class ShopController {
      */
     @FXML
     public void handleAddAutoPart() {
+        // Инициализируем автозапчасть для добавления в корзину
         ShopResult selectedShopResult = autoPartOfShopTable.getSelectionModel().getSelectedItem();
         int number = spinner.getValue();
+        // Проверяем выбор клиента, если все верно добавляем в корзину
         if (selectedShopResult != null && number != 0) {
             orderResult.addPurchases(selectedShopResult, number);
             initController();
@@ -153,6 +161,8 @@ public class ShopController {
     public void handleShoppingCart() {
         orderResult.setCustomerResult(storeUser);
 
+        // Слушаем статус оплаты
+        // Если оплата прошла, формируем заказ и отправляем клиенту
         boolean okClicked = MainApp.showShoppingCardDialog(orderResult);
         if (okClicked) {
             orderResult.setStatus(Status.EXECUTION.getName());
@@ -167,9 +177,7 @@ public class ShopController {
                         tempShopResults.add(shopResult);
                     }
 
-
             // Отправляем товар клиенту отдельным потоком
-
             GoodsDelivery goodsDelivery = new GoodsDelivery();
             goodsDelivery.setShopResults(tempShopResults);
             goodsDelivery.setCustomerService(CUSTOMER_SERVICE);
@@ -178,6 +186,7 @@ public class ShopController {
             Thread deliveryThread = new Thread(goodsDelivery);
             deliveryThread.start();
 
+            // Сохраняем заказ в БД и создаем новый
             tempShopResults.forEach(SHOP_SERVICE::saveEntityResult);
             CUSTOMER_SERVICE.saveEntityResult(storeUser);
             orderResult = new OrderResult();

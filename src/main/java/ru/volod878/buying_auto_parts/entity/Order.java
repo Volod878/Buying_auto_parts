@@ -9,6 +9,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс-entity связывающий объекты Order с таблицей в БД
+ */
 @Entity
 @Table(name = "orders")
 public class Order {

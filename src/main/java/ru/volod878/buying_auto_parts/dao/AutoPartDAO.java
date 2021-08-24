@@ -7,6 +7,9 @@ import ru.volod878.buying_auto_parts.entity.Shop;
 
 import java.util.List;
 
+/**
+ * Класс-DAO отвечает за работу с сущностями AutoPart
+ */
 public class AutoPartDAO implements BuyingAutoDAO<AutoPart> {
 
     private final SessionFactory factory;
@@ -34,18 +37,21 @@ public class AutoPartDAO implements BuyingAutoDAO<AutoPart> {
 
     @Override
     public void saveEntity(AutoPart autoPart) {
+
+        // Получаем сущность Shop связанную с текущим AutoPart
+        // для корректного сохранения в БД
         try(Session session = factory.getCurrentSession()) {
 
-            Shop shop;
             int id = autoPart.getId();
+            Shop shop;
 
-            session.beginTransaction();
             if (id != 0) {
+                session.beginTransaction();
                 shop = session.get(Shop.class, id);
+                session.getTransaction().commit();
             } else {
                 shop = new Shop(0);
             }
-            session.getTransaction().commit();
 
             shop.setAutoPart(autoPart);
             autoPart.setShop(shop);

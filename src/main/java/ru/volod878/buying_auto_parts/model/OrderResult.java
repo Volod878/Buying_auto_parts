@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Класс-модель для заказов клиентов.
+ * С данным классом работает контроллер
+ */
 public class OrderResult {
     private final IntegerProperty number;
     private final DoubleProperty totalCost;

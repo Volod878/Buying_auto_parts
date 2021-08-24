@@ -13,6 +13,10 @@ import ru.volod878.buying_auto_parts.service.CustomerService;
 
 import java.time.LocalDateTime;
 
+/**
+ * Класс-контроллер.
+ * Управляет всеми действиями с клиентами
+ */
 public class CustomerController {
     @FXML
     public TableView<CustomerResult> customerTable;
@@ -40,17 +44,19 @@ public class CustomerController {
     private CustomerResult customerResult;
     private OrderResult orderResult;
 
-    public CustomerController() {
-    }
-
+    /**
+     * Вызывается главным приложением, которое даёт на себя ссылку
+     */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
     }
 
-
+    /**
+     * Инициализация класса-контроллера.
+     */
     @FXML
     private void initialize() {
-        // Инициализация таблицы клиентов.
+        // Инициализация таблицы клиентов
         ObservableList<CustomerResult> allCustomerResults = CUSTOMER_SERVICE.getAllEntityResults();
         customerTable.setItems(allCustomerResults);
 
@@ -58,7 +64,7 @@ public class CustomerController {
         ordersColumn.setCellValueFactory(cellData -> cellData.getValue().numberOfOrdersProperty().asObject());
 
         // Слушаем изменения выбора, и при изменении отображаем
-        // дополнительную информацию об автозапчасти.
+        // дополнительную информацию о заказах клиента
         customerTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     this.customerResult = newValue;
@@ -72,7 +78,7 @@ public class CustomerController {
      */
     private void showOrderDetails(CustomerResult customerResult) {
         if (customerResult != null && customerResult.getAllOrders() != null) {
-            // Заполняем метки информацией из объекта AutoPart.
+            // Заполняем таблицу информацией из объекта OrderResult принадлежащего клиенту
             ObservableList<OrderResult> allOrders = customerResult.getAllOrders();
             ordersTable.setItems(allOrders);
 
@@ -81,12 +87,19 @@ public class CustomerController {
             dateColumn.setCellValueFactory(cellData -> cellData.getValue().purchaseDateProperty());
             statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
+            // Слушаем изменения выбора, и при изменении присваиваем ссылку
+            // на заказ полу orderResult
             ordersTable.getSelectionModel().selectedItemProperty().addListener(
                     (observable, oldValue, newValue) -> this.orderResult = newValue);
 
         }
     }
 
+    /**
+     * Срабатывает при нажатии кнопки Подробнее.
+     * Если orderResult не null
+     * открываем окно с подробной информацией о заказе
+     */
     @FXML
     public void handleDetails() {
         if (orderResult != null) {
@@ -94,6 +107,7 @@ public class CustomerController {
             MainApp.showPurchaseDetails(orderResult);
         }
         else {
+            // Предупреждаем что нужно выбрать заказ
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.initOwner(MainApp.getPrimaryStage());
             alert.setTitle("Внимание!");
@@ -104,6 +118,10 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Срабатывает при нажатии кнопки Добавить.
+     * Открывает диалоговое окно для добавления нового клиента
+     */
     @FXML
     public void handleAddNewCustomer() {
         CustomerResult tempCustomerResult = new CustomerResult();
@@ -114,10 +132,17 @@ public class CustomerController {
         }
     }
 
+    /**
+     * Срабатывает при нажатии кнопки Выбрать.
+     * Если customerResult не null, преходим в магазин
+     * для совершения новых покупок текущему клиенту
+     */
+
     @FXML
     public void handleChoiceCustomer() {
         if (customerResult != null) mainApp.showShop(customerResult);
         else {
+            // Если клиент не выбран
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.initOwner(MainApp.getPrimaryStage());
             alert.setTitle("Внимание!");

@@ -3,6 +3,10 @@ package ru.volod878.buying_auto_parts.model;
 import javafx.beans.property.*;
 import ru.volod878.buying_auto_parts.entity.ShoppingCart;
 
+/**
+ * Класс-модель для автозапчастей добавленных в корзину.
+ * С данным классом работает контроллер
+ */
 public class ShoppingCartResult {
     private final StringProperty name;
     private final DoubleProperty price;

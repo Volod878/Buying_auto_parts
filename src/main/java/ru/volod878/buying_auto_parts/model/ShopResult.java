@@ -5,8 +5,8 @@ import ru.volod878.buying_auto_parts.entity.Shop;
 
 /**
  * Класс-модель для автозапчастей в магазине.
+ * С данным классом работает контроллер
  */
-
 public class ShopResult {
 
     private final IntegerProperty vendorCode;

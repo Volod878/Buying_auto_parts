@@ -14,6 +14,9 @@ import ru.volod878.buying_auto_parts.model.ShoppingCartResult;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Окно-корзина для оплаты заказа
+ */
 public class ShoppingCartController {
 
     @FXML
@@ -35,12 +38,8 @@ public class ShoppingCartController {
     private OrderResult orderResult;
     private boolean okClicked = false;
 
-    public ShoppingCartController() {
-    }
-
     public void initTable() {
-
-        // Инициализация таблицы автозапчастей в корзине.
+        // Инициализация таблицы автозапчастей в корзине
         ObservableList<ShoppingCartResult> shoppingCartResult = orderResult.getAllPurchases();
         shoppingCartTable.setItems(shoppingCartResult);
 
@@ -91,6 +90,7 @@ public class ShoppingCartController {
      */
     @FXML
     private void handlePay() {
+        // Если корзина не пустая, оплачиваем заказ
         double totalCost = Double.parseDouble(totalCostLabel.getText().replace(",", "."));
         if (totalCost != 0.0) {
             orderResult.setTotalCost(totalCost);

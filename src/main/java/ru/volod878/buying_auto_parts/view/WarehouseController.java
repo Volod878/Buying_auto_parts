@@ -48,9 +48,9 @@ public class WarehouseController {
     private static final BuyingAutoService<ShopResult>
             SHOP_SERVICE = new ShopService(MainApp.getFactory());
 
-    public WarehouseController() {
-    }
-
+    /**
+     * Инициализация класса-контроллера
+     */
     @FXML
     private void initialize() {
         // Инициализация таблицы автозапчастей с четырьмя столбцами.
@@ -94,6 +94,7 @@ public class WarehouseController {
                     new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue, 0);
             spinner.setValueFactory(valueFactory);
         } else {
+            // Отчищаем поля
             nameLabel.setText("");
             priceLabel.setText("");
             amountLabel.setText("");
@@ -117,7 +118,7 @@ public class WarehouseController {
         Alert alert;
 
         if (selectedAutoPartResult != null && number != 0) {
-            // Уменьшаем количество автозапчастей на складе
+            // Уменьшаем количество автозапчастей на складе и сохраняем в БД
             selectedAutoPartResult.setAmount(selectedAutoPartResult.getAmount() - number);
             AUTO_PART_SERVICE.saveEntityResult(selectedAutoPartResult);
 
@@ -129,6 +130,7 @@ public class WarehouseController {
             Thread deliveryThread = new Thread(goodsDelivery);
             deliveryThread.start();
 
+            // Информационное сообщение об удачной отправке товара
             alert = new Alert(Alert.AlertType.INFORMATION);
             title = "Служба доставки";
             headerText = "Товар отправлен в магазин";
@@ -136,12 +138,14 @@ public class WarehouseController {
 
             initialize();
         } else {
+            // Если автозапчасть не выбрана
             alert = new Alert(Alert.AlertType.WARNING);
             title = "Внимание!";
             headerText = "Не выбраны автозапчасть или количество";
             contentText = "Пожалуйста, выберите автозапчасть и укажите количество";
         }
 
+        // Отображение информационного сообщения на экране
         alert.initOwner(MainApp.getPrimaryStage());
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -156,6 +160,8 @@ public class WarehouseController {
     @FXML
     private void handleNewAutoPart() {
         AutoPartResult tempAutoPartResult = new AutoPartResult();
+        // Слушаем изменения выбора.
+        // Если true - сохраняем в БД
         boolean okClicked = MainApp.showAutoPartEditDialog(tempAutoPartResult);
         if (okClicked) {
             AUTO_PART_SERVICE.saveEntityResult(tempAutoPartResult);
@@ -171,6 +177,8 @@ public class WarehouseController {
     private void handleEditAutoPart() {
         AutoPartResult selectedAutoPartResult = autoPartTable.getSelectionModel().getSelectedItem();
         if (selectedAutoPartResult != null) {
+            // Слушаем изменения выбора.
+            // Если true - сохраняем в БД
             boolean okClicked = MainApp.showAutoPartEditDialog(selectedAutoPartResult);
             if (okClicked) {
                 AUTO_PART_SERVICE.saveEntityResult(selectedAutoPartResult);
@@ -195,6 +203,7 @@ public class WarehouseController {
     @FXML
     private void handleDeleteAutoPart() {
         int selectedIndex = autoPartTable.getSelectionModel().getSelectedIndex();
+        // Если автозапчасть выбрана, удаляем ем ее из БД
         if (selectedIndex >= 0) {
             AUTO_PART_SERVICE.deleteEntityResult(
                     autoPartTable.getSelectionModel().getSelectedItem().getVendorCode());

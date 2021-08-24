@@ -4,6 +4,9 @@ import ru.volod878.buying_auto_parts.model.AutoPartResult;
 
 import javax.persistence.*;
 
+/**
+ * Класс-entity связывающий объекты AutoPart с таблицей в БД
+ */
 @Entity
 @Table(name = "auto_parts")
 public class AutoPart {

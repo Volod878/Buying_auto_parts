@@ -10,6 +10,10 @@ import ru.volod878.buying_auto_parts.model.ShopResult;
 
 import java.util.List;
 
+/**
+ * Класс отвечает за работу с сущностями Shop и моделями ShopResult.
+ * Данный класс адаптирует эти объекты между собой
+ */
 public class ShopService implements BuyingAutoService<ShopResult> {
 
     private final BuyingAutoDAO<Shop> buyingAutoDAO;
